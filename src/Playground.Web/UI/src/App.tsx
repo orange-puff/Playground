@@ -2,10 +2,10 @@ import React from 'react'
 import {
     Switch,
     Route
-} from "react-router-dom"
-import Home from './components/Home'
-import Layout from './components/Layout'
-import Projects from './components/projects/projects'
+} from 'react-router-dom';
+import Home from './components/Home';
+import Layout from './components/Layout';
+import Projects from './components/projects/Projects';
 
 function App() {
     return (
@@ -15,7 +15,7 @@ function App() {
                 <Route exact path="/projects" component={Projects} />
             </Switch>
         </Layout>
-    )
+    );
 }
 
-export default App
+export default App;

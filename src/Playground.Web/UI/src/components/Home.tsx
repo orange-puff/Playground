@@ -1,6 +1,6 @@
-﻿import React from 'react'
-import logo from './logo.svg'
-import './App.css'
+﻿import React from 'react';
+import logo from './logo.svg';
+import './App.css';
 
 const Home = () => {
     return (
@@ -13,7 +13,7 @@ const Home = () => {
                 Don't Learn React
             </header>
         </div>
-    )
+    );
 }
 
-export default Home
+export default Home;

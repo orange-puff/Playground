@@ -1,11 +1,11 @@
-﻿import React from 'react'
+﻿import React from 'react';
 
 const Projects = () => {
     return (
         <p>
             My Projects
         </p>
-    )
+    );
 }
 
-export default Projects
+export default Projects;

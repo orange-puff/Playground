@@ -1,5 +1,5 @@
-﻿import React from 'react'
-import Container from 'react-bootstrap'
+﻿import React from 'react';
+import { Container } from 'react-bootstrap';
 
 const Layout = (props: any) => {
     return (
@@ -7,9 +7,11 @@ const Layout = (props: any) => {
             <p>
                 Testeroni
             </p>
-            {props.children}
+            <Container>
+                {props.children}
+            </Container>
         </div>
-        )
+    );
 }
 
-export default Layout
+export default Layout;

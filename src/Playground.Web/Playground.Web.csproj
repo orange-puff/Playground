@@ -7,8 +7,6 @@
         <IsPackable>false</IsPackable>
         <SpaRoot>UI\</SpaRoot>
         <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-        <RootNamespace>blog.Web</RootNamespace>
-        <UserSecretsId>aa4cca30-e745-45c2-9e45-30dc66e27fef</UserSecretsId>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(RunConfiguration)' == 'Playground.Web' " />
     <ItemGroup>

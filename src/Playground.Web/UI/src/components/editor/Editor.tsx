@@ -1,14 +1,33 @@
 ﻿import React, { useState } from 'react';
 import './Editor.css';
 
+const MAX_LINE_LENGTH = 100;
+
 const Editor = () => {
     const [input, setInput] = useState<string>('');
     const [lineNumbers, setLineNumbers] = useState([1]);
     const [numRows, setNumRows] = useState(1);
 
     function handleChange(val: string) {
-        setInput(val);
-        const numLines = val.split('\n').length;
+        const splitLines = val.split('\n');
+
+        // if a line has length > MAX_LINE_LENGTH, split it up
+        for (let i = 0; i < splitLines.length; i++) {
+            if (splitLines[i].length <= MAX_LINE_LENGTH) {
+                continue;
+            }
+            const tmp: Array<string> = [];
+            for (let j = 0; j < Math.ceil(splitLines[i].length / MAX_LINE_LENGTH); j++) {
+                tmp.push(splitLines[i].substring(j * MAX_LINE_LENGTH, (j + 1) * MAX_LINE_LENGTH));
+            }
+            splitLines[i] = tmp[tmp.length - 1];
+            for (let j = tmp.length - 2; j >= 0; j--) {
+                splitLines.splice(i, 0, tmp[j]);
+            }
+        }
+
+        setInput(splitLines.join('\n'))
+        const numLines = splitLines.length;
         setNumRows(numLines);
         const tmp = [];
         for (let i = 0; i < numLines; i++) {
@@ -18,7 +37,7 @@ const Editor = () => {
     }
     return (
         <div className="editor">
-            <textarea id="codeArea" placeholder="yo bro" value={input} onChange={(event) => handleChange(event.target.value)} rows={numRows}/>
+            <textarea id="codeArea" placeholder="yo bro" value={input} onChange={(event) => handleChange(event.target.value)} rows={numRows} cols={MAX_LINE_LENGTH}/>
             <div className="lineNumberColumn">
                 {lineNumbers.map(lineNumber => <div className="editorLineNumber" key={lineNumber}>{lineNumber}</div>)}
             </div>

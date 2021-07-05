@@ -12,7 +12,6 @@
 .editor #codeArea {
     outline: none;
     border: none;
-    width: 90%;
     resize: none;
     padding-left: 60px !important;
     line-height: 19px;

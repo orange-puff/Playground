@@ -5,6 +5,7 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import ClearAllIcon from '@material-ui/icons/ClearAll';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import Editor from '../../editor/Editor';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -64,6 +65,7 @@ const JsonProject = () => {
                     className={styles.editor}
                 />
             </div>
+            <Editor/>
         </div>
     );
 }

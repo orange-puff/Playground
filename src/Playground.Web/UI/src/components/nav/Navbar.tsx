@@ -10,7 +10,6 @@ import HomeIcon from "@material-ui/icons/Home";
 import { Link } from 'react-router-dom';
 
 const Navbar = () => {
-    console.log('yo')
     return (
         <AppBar position="sticky">
             <Toolbar>

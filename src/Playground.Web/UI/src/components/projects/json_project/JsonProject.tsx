@@ -61,23 +61,10 @@ const JsonProject = () => {
                     Validate
                 </Button>
             </div>
-            <div>
-                <TextField
-                    multiline
-                    rows={numRows}
-                    variant="outlined"
-                    className={styles.editor}
-                    value={input}
-                    onChange={(event) => setInput(event.target.value)}
-                />
-                <TextField
-                    multiline
-                    rows={numRows}
-                    variant="outlined"
-                    className={styles.editor}
-                />
+            <div style={{display: "flex", flexDirection: "row"}}>
+                <Editor value={input} setValue={setInput} placeHolder='head bent over'/>
+                <Editor />
             </div>
-            <Editor/>
         </div>
     );
 }

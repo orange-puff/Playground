@@ -2,7 +2,7 @@
     counter-reset: line;
     border: 1px solid #ced4da;
     width: 50%;
-    height: 100px;
+    height: 500px;
     position: relative;
     display: flex;
     flex-direction: column;

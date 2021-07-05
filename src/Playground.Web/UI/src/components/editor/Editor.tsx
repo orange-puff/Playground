@@ -1,12 +1,24 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import './Editor.css';
 
 const MAX_LINE_LENGTH = 100;
 
-const Editor = () => {
-    const [input, setInput] = useState<string>('');
+interface IEditorProps {
+    value: string;
+    setValue: useState<string>;
+    placeHolder: string;
+}
+
+function Editor(props: React.PropsWithChildren<IEditorProps>) {
+    const { value, setValue, placeHolder } = props;
     const [lineNumbers, setLineNumbers] = useState([1]);
     const [numRows, setNumRows] = useState(1);
+
+    useEffect(() => {
+        if (typeof (value) === 'string') {
+            handleChange(value);
+        }
+    }, [value])
 
     function handleChange(val: string) {
         const splitLines = val.split('\n');
@@ -26,7 +38,7 @@ const Editor = () => {
             }
         }
 
-        setInput(splitLines.join('\n'))
+        setValue(splitLines.join('\n'))
         const numLines = splitLines.length;
         setNumRows(numLines);
         const tmp = [];
@@ -34,10 +46,13 @@ const Editor = () => {
             tmp.push(i + 1);
         }
         setLineNumbers(tmp);
+
+
     }
+
     return (
         <div className="editor">
-            <textarea id="codeArea" placeholder="yo bro" value={input} onChange={(event) => handleChange(event.target.value)} rows={numRows} cols={MAX_LINE_LENGTH}/>
+            <textarea id="codeArea" placeholder={placeHolder} value={value} onChange={(event) => handleChange(event.target.value)} rows={numRows} cols={MAX_LINE_LENGTH} onKeyDown={(event) => console.log(event)} />
             <div className="lineNumberColumn">
                 {lineNumbers.map(lineNumber => <div className="editorLineNumber" key={lineNumber}>{lineNumber}</div>)}
             </div>

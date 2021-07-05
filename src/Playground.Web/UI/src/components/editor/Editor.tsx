@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import './Editor.css';
 
 const MAX_LINE_LENGTH = 100;
@@ -8,12 +8,14 @@ interface IEditorProps {
     setValue: useState<string>;
     placeHolder: string;
     readonly: boolean;
+    tabSize: number;
 }
 
 function Editor(props: React.PropsWithChildren<IEditorProps>) {
-    const { value, setValue, placeHolder, readonly } = props;
+    const { value, setValue, placeHolder, readonly, tabSize } = props;
     const [lineNumbers, setLineNumbers] = useState([1]);
     const [numRows, setNumRows] = useState(1);
+    const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
         if (typeof (value) === 'string' && !readonly) {
@@ -38,7 +40,6 @@ function Editor(props: React.PropsWithChildren<IEditorProps>) {
                 splitLines.splice(i, 0, tmp[j]);
             }
         }
-
         setValue(splitLines.join('\n'))
         const numLines = splitLines.length;
         setNumRows(numLines);
@@ -47,13 +48,27 @@ function Editor(props: React.PropsWithChildren<IEditorProps>) {
             tmp.push(i + 1);
         }
         setLineNumbers(tmp);
+    }
 
+    function handleKeyDown(event: React.KeyboardEvent) {
+        if (event.key !== "Tab") {
+            return;
+        }
+        event.preventDefault();
+        const space = new Array<string>(tabSize + 1).join(' ');
+        const newValue: string = value.substring(0, textAreaRef.current.selectionStart) + space + value.substring(textAreaRef.current.selectionStart);
+        handleChange(newValue);
 
+        /*
+        if (textAreaRef.current) {
+            textAreaRef.current.setSelectionRange(0, 0);
+        }
+        */
     }
 
     return (
         <div className="editor">
-            <textarea id="codeArea" placeholder={placeHolder} value={value} onChange={(event) => handleChange(event.target.value)} rows={numRows} cols={MAX_LINE_LENGTH} onKeyDown={(event) => console.log(event)} readOnly={readonly}/>
+            <textarea id="codeArea" placeholder={placeHolder} value={value} onChange={(event) => handleChange(event.target.value)} rows={numRows} cols={MAX_LINE_LENGTH} onKeyDown={(event) => handleKeyDown(event)} readOnly={readonly} ref={textAreaRef} />
             <div className="lineNumberColumn">
                 {lineNumbers.map(lineNumber => <div className="editorLineNumber" key={lineNumber}>{lineNumber}</div>)}
             </div>

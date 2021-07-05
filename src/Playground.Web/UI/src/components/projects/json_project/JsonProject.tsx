@@ -35,7 +35,7 @@ const JsonProject = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(input)
         };
-        fetch('api/projects/json_project', requestOptions)
+        fetch('/api/projects/json_project', requestOptions)
             .then(res => res.json())
             .then(data => console.log(data));
     }
@@ -66,7 +66,7 @@ const JsonProject = () => {
                 </Button>
             </div>
             <div style={{ display: "flex", flexDirection: "row" }}>
-                <Editor value={input} setValue={setInput} placeHolder='input' readonly={false} />
+                <Editor value={input} setValue={setInput} placeHolder='input' readonly={false} tabSize={4}/>
                 <Editor value={output} placeHolder='output' readonly={true} />
             </div>
         </div>

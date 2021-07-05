@@ -5,14 +5,15 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import ClearAllIcon from '@material-ui/icons/ClearAll';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import Editor from '../../editor/Editor';
 
 const useStyles = makeStyles((theme) => ({
     button: {
         margin: theme.spacing(1),
     },
-    editor: {
-        width: "50%"
+    title: {
+        textAlign: 'center'
     }
 }));
 
@@ -41,6 +42,9 @@ const JsonProject = () => {
 
     return (
         <div>
+            <Typography variant="h3" component="h3" gutterBottom className={styles.title}>
+                Json Project
+            </Typography>
             <div>
                 <Button
                     variant="contained"
@@ -61,9 +65,9 @@ const JsonProject = () => {
                     Validate
                 </Button>
             </div>
-            <div style={{display: "flex", flexDirection: "row"}}>
-                <Editor value={input} setValue={setInput} placeHolder='input' readonly={false}/>
-                <Editor value={output} placeHolder='output' readonly={true}/>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+                <Editor value={input} setValue={setInput} placeHolder='input' readonly={false} />
+                <Editor value={output} placeHolder='output' readonly={true} />
             </div>
         </div>
     );

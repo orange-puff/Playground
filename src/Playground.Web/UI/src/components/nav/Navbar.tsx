@@ -2,8 +2,7 @@
 import {
     makeStyles,
     AppBar,
-    Toolbar,
-    Typography
+    Toolbar
 } from "@material-ui/core";
 import Button from '@material-ui/core/Button';
 import HomeIcon from "@material-ui/icons/Home";

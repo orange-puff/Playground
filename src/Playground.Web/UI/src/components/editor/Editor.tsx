@@ -18,7 +18,7 @@ const Editor = () => {
     }
     return (
         <div className="editor">
-            <textarea id="codeArea" placeholder="yo bro" value={input} onChange={(event) => handleChange(event.target.value)}/>
+            <textarea id="codeArea" placeholder="yo bro" value={input} onChange={(event) => handleChange(event.target.value)} rows={numRows}/>
             <div className="lineNumberColumn">
                 {lineNumbers.map(lineNumber => lineNumber)}
             </div>

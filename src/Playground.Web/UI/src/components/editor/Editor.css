@@ -17,6 +17,7 @@
     padding-left: 60px !important;
     line-height: 19px;
     overflow: hidden;
+    position: absolute;
 }
 
 .editor .editorLineNumber {

@@ -3,7 +3,7 @@ import './Editor.css';
 
 const Editor = () => {
     const [input, setInput] = useState<string>('');
-    const [lineNumbers, setLineNumbers] = useState([<div className="editorLineNumber">1</div>]);
+    const [lineNumbers, setLineNumbers] = useState([1]);
     const [numRows, setNumRows] = useState(1);
 
     function handleChange(val: string) {
@@ -12,7 +12,7 @@ const Editor = () => {
         setNumRows(numLines);
         const tmp = [];
         for (let i = 0; i < numLines; i++) {
-            tmp.push(<div className="editorLineNumber">{i + 1}</div>);
+            tmp.push(i + 1);
         }
         setLineNumbers(tmp);
     }
@@ -20,7 +20,7 @@ const Editor = () => {
         <div className="editor">
             <textarea id="codeArea" placeholder="yo bro" value={input} onChange={(event) => handleChange(event.target.value)} rows={numRows}/>
             <div className="lineNumberColumn">
-                {lineNumbers.map(lineNumber => lineNumber)}
+                {lineNumbers.map(lineNumber => <div className="editorLineNumber" key={lineNumber}>{lineNumber}</div>)}
             </div>
         </div>
     );

@@ -28,6 +28,17 @@ const JsonProject = () => {
     const [inputState, setInputState] = useState<InputState>(InputState.Neutral);
     const numRows: number = 20;
 
+    function validate() {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(input)
+        };
+        fetch('api/projects/json_project', requestOptions)
+            .then(res => res.json())
+            .then(data => console.log(data));
+    }
+
     return (
         <div>
             <div>
@@ -45,6 +56,7 @@ const JsonProject = () => {
                     color={inputState === InputState.Neutral ? "default" : (inputState === InputState.Good ? "primary" : "secondary")}
                     className={styles.button}
                     startIcon={<DoubleArrowIcon />}
+                    onClick={validate}
                 >
                     Validate
                 </Button>

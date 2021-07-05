@@ -3,6 +3,7 @@
     border: 1px solid #ced4da;
     width: 50%;
     height: 500px;
+    position: relative;
 }
 
 .editor #codeArea {

@@ -26,7 +26,7 @@ const JsonProject = () => {
     const styles = useStyles();
     const [input, setInput] = useState<string>('');
     const [inputState, setInputState] = useState<InputState>(InputState.Neutral);
-    const numRows: number = 20;
+    const [output, setOutput] = useState<sting>('');
 
     function validate() {
         const requestOptions = {
@@ -62,8 +62,8 @@ const JsonProject = () => {
                 </Button>
             </div>
             <div style={{display: "flex", flexDirection: "row"}}>
-                <Editor value={input} setValue={setInput} placeHolder='head bent over' readonly={false}/>
-                <Editor readonly={true}/>
+                <Editor value={input} setValue={setInput} placeHolder='input' readonly={false}/>
+                <Editor value={output} placeHolder='output' readonly={true}/>
             </div>
         </div>
     );

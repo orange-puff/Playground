@@ -16,7 +16,7 @@ function Editor(props: React.PropsWithChildren<IEditorProps>) {
     const [numRows, setNumRows] = useState(1);
 
     useEffect(() => {
-        if (typeof (value) === 'string') {
+        if (typeof (value) === 'string' && !readonly) {
             handleChange(value);
         }
     }, [value])

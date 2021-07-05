@@ -62,8 +62,8 @@ const JsonProject = () => {
                 </Button>
             </div>
             <div style={{display: "flex", flexDirection: "row"}}>
-                <Editor value={input} setValue={setInput} placeHolder='head bent over'/>
-                <Editor />
+                <Editor value={input} setValue={setInput} placeHolder='head bent over' readonly={false}/>
+                <Editor readonly={true}/>
             </div>
         </div>
     );

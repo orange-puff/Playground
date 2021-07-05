@@ -7,10 +7,11 @@ interface IEditorProps {
     value: string;
     setValue: useState<string>;
     placeHolder: string;
+    readonly: boolean;
 }
 
 function Editor(props: React.PropsWithChildren<IEditorProps>) {
-    const { value, setValue, placeHolder } = props;
+    const { value, setValue, placeHolder, readonly } = props;
     const [lineNumbers, setLineNumbers] = useState([1]);
     const [numRows, setNumRows] = useState(1);
 
@@ -52,7 +53,7 @@ function Editor(props: React.PropsWithChildren<IEditorProps>) {
 
     return (
         <div className="editor">
-            <textarea id="codeArea" placeholder={placeHolder} value={value} onChange={(event) => handleChange(event.target.value)} rows={numRows} cols={MAX_LINE_LENGTH} onKeyDown={(event) => console.log(event)} />
+            <textarea id="codeArea" placeholder={placeHolder} value={value} onChange={(event) => handleChange(event.target.value)} rows={numRows} cols={MAX_LINE_LENGTH} onKeyDown={(event) => console.log(event)} readOnly={readonly}/>
             <div className="lineNumberColumn">
                 {lineNumbers.map(lineNumber => <div className="editorLineNumber" key={lineNumber}>{lineNumber}</div>)}
             </div>

@@ -5,7 +5,7 @@ const MAX_LINE_LENGTH = 100;
 
 interface IEditorProps {
     value: string;
-    setValue: useState<string>;
+    setValue: any;
     placeHolder: string;
     readonly: boolean;
     tabSize: number;
@@ -56,14 +56,12 @@ function Editor(props: React.PropsWithChildren<IEditorProps>) {
         }
         event.preventDefault();
         const space = new Array<string>(tabSize + 1).join(' ');
-        const newValue: string = value.substring(0, textAreaRef.current.selectionStart) + space + value.substring(textAreaRef.current.selectionStart);
-        handleChange(newValue);
 
-        /*
         if (textAreaRef.current) {
-            textAreaRef.current.setSelectionRange(0, 0);
+            const newValue: string = value.substring(0, textAreaRef.current.selectionStart) + space + value.substring(textAreaRef.current.selectionStart);
+            textAreaRef.current.setSelectionRange(textAreaRef.current.selectionStart + tabSize, textAreaRef.current.selectionStart + tabSize);
+            handleChange(newValue);
         }
-        */
     }
 
     return (

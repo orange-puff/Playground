@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Editor from '../../editor/Editor';
+import { request } from 'https';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -27,7 +28,7 @@ const JsonProject = () => {
     const styles = useStyles();
     const [input, setInput] = useState<string>('');
     const [inputState, setInputState] = useState<InputState>(InputState.Neutral);
-    const [output, setOutput] = useState<sting>('');
+    const [output, setOutput] = useState<string>('');
 
     function validate() {
         const requestOptions = {
@@ -35,6 +36,7 @@ const JsonProject = () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(input)
         };
+        console.log(requestOptions);
         fetch('/api/projects/json_project', requestOptions)
             .then(res => res.json())
             .then(data => console.log(data));
@@ -66,8 +68,8 @@ const JsonProject = () => {
                 </Button>
             </div>
             <div style={{ display: "flex", flexDirection: "row" }}>
-                <Editor value={input} setValue={setInput} placeHolder='input' readonly={false} tabSize={4}/>
-                <Editor value={output} placeHolder='output' readonly={true} />
+                <Editor value={input} setValue={setInput} placeHolder='input' readonly={false} tabSize={2} />
+                <Editor value={output} setValue={null} placeHolder='output' readonly={true} tabSize={0} />
             </div>
         </div>
     );

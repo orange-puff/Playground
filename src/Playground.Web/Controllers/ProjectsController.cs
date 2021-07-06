@@ -20,10 +20,10 @@ namespace Playground.Web.Controllers
         }
 
         [HttpPost("[controller]/json_project")]
-        public string JsonProject(JsonProjectModel json)
+        public IActionResult JsonProject(JsonProjectModel json)
         {
 
-            return "hello, world";
+            return Ok();
         }
     }
 }

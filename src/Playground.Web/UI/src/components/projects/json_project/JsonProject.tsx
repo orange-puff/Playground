@@ -34,13 +34,9 @@ const JsonProject = () => {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({json: input})
+            body: JSON.stringify({ json: input })
         };
-        console.log(requestOptions);
-        fetch('/api/projects/json_project', requestOptions)
-            .then(res => res.json())
-            .then(data => console.log(data))
-            .catch(error => console.log(error));
+        fetch('/api/projects/json_project', requestOptions);
     }
 
     return (

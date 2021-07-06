@@ -1,7 +1,7 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Playground.EF;
+using Playground.Web.Models;
 
 namespace Playground.Web.Controllers
 {
@@ -20,7 +20,7 @@ namespace Playground.Web.Controllers
         }
 
         [HttpPost("[controller]/json_project")]
-        public string JsonProject(string json)
+        public string JsonProject(JsonProjectModel json)
         {
 
             return "hello, world";

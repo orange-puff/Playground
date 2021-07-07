@@ -50,23 +50,9 @@ function Editor(props: React.PropsWithChildren<IEditorProps>) {
         setLineNumbers(tmp);
     }
 
-    function handleKeyDown(event: React.KeyboardEvent) {
-        if (event.key !== "Tab") {
-            return;
-        }
-        event.preventDefault();
-        const space = new Array<string>(tabSize + 1).join(' ');
-
-        if (textAreaRef.current) {
-            const newValue: string = value.substring(0, textAreaRef.current.selectionStart) + space + value.substring(textAreaRef.current.selectionStart);
-            textAreaRef.current.setSelectionRange(textAreaRef.current.selectionStart + tabSize, textAreaRef.current.selectionStart + tabSize);
-            handleChange(newValue);
-        }
-    }
-
     return (
         <div className="editor">
-            <textarea id="codeArea" placeholder={placeHolder} value={value} onChange={(event) => handleChange(event.target.value)} rows={numRows} cols={MAX_LINE_LENGTH} onKeyDown={(event) => handleKeyDown(event)} readOnly={readonly} ref={textAreaRef} />
+            <textarea id="codeArea" placeholder={placeHolder} value={value} onChange={(event) => handleChange(event.target.value)} rows={numRows} cols={MAX_LINE_LENGTH} readOnly={readonly} ref={textAreaRef} />
             <div className="lineNumberColumn">
                 {lineNumbers.map(lineNumber => <div className="editorLineNumber" key={lineNumber}>{lineNumber}</div>)}
             </div>

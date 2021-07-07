@@ -24,6 +24,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Playground\Playground.csproj" />
+        <ProjectReference Include="..\JsonProject\JsonProject.csproj" />
     </ItemGroup>
     <ItemGroup>
         <!-- Don't publish the SPA source files, but do show them in the project files list -->
@@ -31,14 +32,14 @@
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="UI\src\components\" />
-      <Folder Include="UI\src\components\projects\" />
-      <Folder Include="UI\src\components\projects\json_project\" />
-      <Folder Include="UI\src\components\home\" />
-      <Folder Include="UI\src\components\layout\" />
-      <Folder Include="UI\src\components\nav\" />
-      <Folder Include="UI\src\components\editor\" />
-      <Folder Include="Models\" />
+        <Folder Include="UI\src\components\" />
+        <Folder Include="UI\src\components\projects\" />
+        <Folder Include="UI\src\components\projects\json_project\" />
+        <Folder Include="UI\src\components\home\" />
+        <Folder Include="UI\src\components\layout\" />
+        <Folder Include="UI\src\components\nav\" />
+        <Folder Include="UI\src\components\editor\" />
+        <Folder Include="Models\" />
     </ItemGroup>
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
         <!-- Ensure Node.js is installed -->

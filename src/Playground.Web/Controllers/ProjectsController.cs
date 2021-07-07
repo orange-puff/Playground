@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Playground.EF;
 using Playground.Web.Models;
+using JsonProject;
 
 namespace Playground.Web.Controllers
 {
@@ -22,7 +23,10 @@ namespace Playground.Web.Controllers
         [HttpPost("[controller]/json_project")]
         public IActionResult JsonProject(JsonProjectModel json)
         {
-
+            if (JsonHelper.TryFormat(out var s))
+            {
+                _logger.LogInformation(s);
+            }
             return Ok();
         }
     }

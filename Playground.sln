@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground.Web", "src\Playg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "src\Playground\Playground.csproj", "{B23D3B33-3151-408E-93B7-8024A1FB981D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonProject", "src\JsonProject\JsonProject.csproj", "{03082967-7B05-44C1-8345-FA36B280A669}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B23D3B33-3151-408E-93B7-8024A1FB981D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B23D3B33-3151-408E-93B7-8024A1FB981D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B23D3B33-3151-408E-93B7-8024A1FB981D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03082967-7B05-44C1-8345-FA36B280A669}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03082967-7B05-44C1-8345-FA36B280A669}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03082967-7B05-44C1-8345-FA36B280A669}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03082967-7B05-44C1-8345-FA36B280A669}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

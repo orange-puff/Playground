@@ -5,6 +5,6 @@ namespace Playground.Models
     {
         public int TempId { get; set; }
 
-        public string TempName { get; set; }
+        public string TempName { get; set; } = null!;
     }
 }

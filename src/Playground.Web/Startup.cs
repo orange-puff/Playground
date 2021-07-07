@@ -86,7 +86,7 @@ namespace Playground.Web
             {
                 using (var context = serviceScope.ServiceProvider.GetService<PlaygroundDbContext>())
                 {
-                    context.Database.Migrate();
+                    context?.Database?.Migrate();
                 }
             }
         }

@@ -8,6 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Editor from '../../editor/Editor';
 import { request } from 'https';
+import './JsonProject.css';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -36,7 +37,14 @@ const ErrorBox = (props: React.PropsWithChildren<IErrorBoxProps>) => {
     const { error } = props;
     return (
         <div className="errorBox">
-            <pre>{error}</pre>
+            <div className="errorColumn">
+                <Typography variant="h6">
+                    Error:
+                    </Typography>
+            </div>
+            <div className="errorBody">
+                <pre>{error}</pre>
+            </div>
         </div>
     );
 }
@@ -72,7 +80,7 @@ const JsonProject = () => {
                     color="secondary"
                     className={styles.button}
                     startIcon={<ClearAllIcon />}
-                    onClick={() => { setInput(''); setOutput(''); }}
+                    onClick={() => { setInput(''); setOutput(''); setError(''); }}
                 >
                     Clear
                 </Button>

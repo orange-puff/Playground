@@ -8,8 +8,9 @@ namespace JsonProject
         public static bool TryFormat(out string json, out string error)
         {
             json = "{\n\"hello\": [1, 2, 3]\n}";
-            error = "thing was bad";
-            return true;
+            error = "\"hello\": 1, 2, 3";
+            error += "\n          ^ expected }";
+            return false;
             /*
             var toRet = new List<char>();
 

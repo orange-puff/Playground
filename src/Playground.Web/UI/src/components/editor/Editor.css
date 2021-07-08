@@ -7,6 +7,7 @@
     display: flex;
     flex-direction: column;
     overflow: auto;
+    background-color: black;
 }
 
 .editor #codeArea {
@@ -17,6 +18,9 @@
     line-height: 19px;
     overflow: hidden;
     position: absolute;
+    background-color: inherit;
+    color: white;
+    font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
 }
 
 .editor .editorLineNumber {
@@ -27,9 +31,10 @@
     margin-top: 3px;
     position: absolute;
     left: 0px;
-    color: #cccccc;
+    color: white;
     text-align: right;
     width: 40px;
     font-weight: 100;
     vertical-align: middle;
+    font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
 }

@@ -25,7 +25,20 @@ enum InputState {
 }
 
 interface IJsonProjectModel {
-    json: string
+    json: string;
+}
+
+interface IErrorBoxProps {
+    error: string;
+}
+
+const ErrorBox = (props: React.PropsWithChildren<IErrorBoxProps>) => {
+    const { error } = props;
+    return (
+        <div className="errorBox">
+            <pre>{error}</pre>
+        </div>
+    );
 }
 
 const JsonProject = () => {
@@ -77,8 +90,7 @@ const JsonProject = () => {
                 <Editor value={input} setValue={setInput} placeHolder='input' readonly={false} />
                 <Editor value={output} setValue={setOutput} placeHolder='output' readonly={true} />
             </div>
-            <p>{error}</p>
-            <p>{output}</p>
+            {error == '' ? <p></p> : <ErrorBox error={error} />}
         </div>
     );
 }

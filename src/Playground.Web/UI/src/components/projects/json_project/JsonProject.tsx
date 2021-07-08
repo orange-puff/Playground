@@ -24,19 +24,28 @@ enum InputState {
     Bad = -1
 }
 
+interface IJsonProjectModel {
+    json: string
+}
+
 const JsonProject = () => {
     const styles = useStyles();
     const [input, setInput] = useState<string>('');
     const [inputState, setInputState] = useState<InputState>(InputState.Neutral);
     const [output, setOutput] = useState<string>('');
+    const [error, setError] = useState<string>('');
 
     function validate() {
+        const body: IJsonProjectModel = { json: input };
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ json: input })
+            body: JSON.stringify(body)
         };
-        fetch('/api/projects/json_project', requestOptions);
+        fetch('/api/projects/json_project', requestOptions)
+            .then(res => res.json())
+            .then(data => 'error' in data ? setError(data.error) : setOutput(data.json))
+            .catch(error => console.log(error));
     }
 
     return (
@@ -50,7 +59,7 @@ const JsonProject = () => {
                     color="secondary"
                     className={styles.button}
                     startIcon={<ClearAllIcon />}
-                    onClick={() => setInput('')}
+                    onClick={() => { setInput(''); setOutput(''); }}
                 >
                     Clear
                 </Button>
@@ -65,9 +74,11 @@ const JsonProject = () => {
                 </Button>
             </div>
             <div style={{ display: "flex", flexDirection: "row" }}>
-                <Editor value={input} setValue={setInput} placeHolder='input' readonly={false} tabSize={2} />
-                <Editor value={output} setValue={null} placeHolder='output' readonly={true} tabSize={0} />
+                <Editor value={input} setValue={setInput} placeHolder='input' readonly={false} />
+                <Editor value={output} setValue={setOutput} placeHolder='output' readonly={true} />
             </div>
+            <p>{error}</p>
+            <p>{output}</p>
         </div>
     );
 }

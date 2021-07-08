@@ -8,17 +8,15 @@ interface IEditorProps {
     setValue: any;
     placeHolder: string;
     readonly: boolean;
-    tabSize: number;
 }
 
 function Editor(props: React.PropsWithChildren<IEditorProps>) {
-    const { value, setValue, placeHolder, readonly, tabSize } = props;
-    const [lineNumbers, setLineNumbers] = useState([1]);
+    const { value, setValue, placeHolder, readonly } = props;
     const [numRows, setNumRows] = useState(1);
-    const textAreaRef = useRef<HTMLTextAreaElement>(null);
+    const [lineNumbers, setLineNumbers] = useState([1]);
 
     useEffect(() => {
-        if (typeof (value) === 'string' && !readonly) {
+        if (typeof (value) === 'string') {
             handleChange(value);
         }
     }, [value])
@@ -26,7 +24,7 @@ function Editor(props: React.PropsWithChildren<IEditorProps>) {
     function handleChange(val: string) {
         const splitLines = val.split('\n');
 
-        // if a line has length > MAX_LINE_LENGTH, split it up
+        /* if a line has length > MAX_LINE_LENGTH, split it up */
         for (let i = 0; i < splitLines.length; i++) {
             if (splitLines[i].length <= MAX_LINE_LENGTH) {
                 continue;
@@ -52,7 +50,7 @@ function Editor(props: React.PropsWithChildren<IEditorProps>) {
 
     return (
         <div className="editor">
-            <textarea id="codeArea" placeholder={placeHolder} value={value} onChange={(event) => handleChange(event.target.value)} rows={numRows} cols={MAX_LINE_LENGTH} readOnly={readonly} ref={textAreaRef} />
+            <textarea id="codeArea" placeholder={placeHolder} value={value} onChange={(event) => handleChange(event.target.value)} rows={numRows} cols={MAX_LINE_LENGTH} readOnly={readonly} />
             <div className="lineNumberColumn">
                 {lineNumbers.map(lineNumber => <div className="editorLineNumber" key={lineNumber}>{lineNumber}</div>)}
             </div>

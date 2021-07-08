@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Playground.EF;
-using Playground.Web.Models;
+using Playground.Web.Models.JsonProjectModels;
 using JsonProject;
 
 namespace Playground.Web.Controllers
@@ -32,7 +32,7 @@ namespace Playground.Web.Controllers
             }
             else
             {
-                return Ok(new JsonProjectModel
+                return Ok(new JsonProjectErrorModel
                 {
                     Error = error
                 });

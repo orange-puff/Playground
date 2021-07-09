@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace JsonProject
 {
     /// <summary>
+    /// Json Rules:
     /// <list type="bullet">
     /// <item>
     /// <description>Data is in name/value pairs</description>
@@ -51,17 +52,34 @@ namespace JsonProject
     /// </summary>
     public static class JsonHelper
     {
-        public static bool TryFormat(out string json, out string error)
+        /// <summary>
+        /// Given a Json, try to format it. A failure to format means the json is invalid
+        /// </summary>
+        public static bool TryFormat(out string result)
         {
-            json = "{\n\"hello\": [1, 2, 3]\n}";
-            error = "\"hello\": 1, 2, 3";
-            error += "\n          ^ expected }";
+            result = "\"hello\": 1, 2, 3";
+            result += "\n          ^ expected }";
             return false;
-            /*
-            var toRet = new List<char>();
+        }
 
-            json = new string(toRet.ToArray());
-            return true;*/
+        public static bool TryTokenize(string json, out List<JsonToken> jsonTokens)
+        {
+            jsonTokens = new List<JsonToken>();
+
+            for (int i = 0; i < json.Length; i++)
+            {
+                if (json[i] == '{')
+                {
+                    jsonTokens.Add(new JsonToken(JsonTokenType.OpenBrace, "{"));
+                }
+                else if (json[i] == '}')
+                {
+                    jsonTokens.Add(new JsonToken(JsonTokenType.CloseBrace, "}"));
+                }
+                else if (json[i] == )
+            }
+
+            return true;
         }
     }
 }

@@ -23,18 +23,18 @@ namespace Playground.Web.Controllers
         [HttpPost("[controller]/json_project")]
         public IActionResult JsonProject(JsonProjectModel json)
         {
-            if (JsonHelper.TryFormat(out var formattedJson, out var error))
+            if (JsonHelper.TryFormat(out var result))
             {
                 return Ok(new JsonProjectModel
                 {
-                    Json = formattedJson
+                    Json = result
                 });
             }
             else
             {
                 return Ok(new JsonProjectErrorModel
                 {
-                    Error = error
+                    Error = result
                 });
             }
         }

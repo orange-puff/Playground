@@ -53,7 +53,7 @@ namespace JsonProject
     public static class JsonHelper
     {
         /// <summary>
-        /// Given a Json, try to format it. A failure to format means the json is invalid
+        /// Given a Json, try to format it. A failure to format means the json is invalid. Returns formatted json or error
         /// </summary>
         public static bool TryFormat(out string result)
         {
@@ -65,7 +65,8 @@ namespace JsonProject
         public static bool TryTokenize(string json, out List<JsonToken> jsonTokens)
         {
             jsonTokens = new List<JsonToken>();
-
+            var inString = false;
+            var inNum = false;
             for (int i = 0; i < json.Length; i++)
             {
                 if (json[i] == '{')
@@ -76,7 +77,19 @@ namespace JsonProject
                 {
                     jsonTokens.Add(new JsonToken(JsonTokenType.CloseBrace, "}"));
                 }
-                else if (json[i] == )
+                else if (json[i] == '[')
+                {
+                    jsonTokens.Add(new JsonToken(JsonTokenType.OpenBracket, "["));
+                }
+                else if (json[i] == ']')
+                {
+                    jsonTokens.Add(new JsonToken(JsonTokenType.CloseBracket, "]"));
+                }
+                else if (json[i] == '"')
+                {
+                    jsonTokens.Add(new JsonToken(JsonTokenType.Quote, "\""));
+                    inString = !inString;
+                }
             }
 
             return true;

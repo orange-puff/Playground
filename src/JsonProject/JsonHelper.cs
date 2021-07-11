@@ -93,7 +93,10 @@ namespace JsonProject
                     if (curr.Count > 0)
                     {
                         var s = new string(curr.ToArray());
-                        var jsonTokenType = IdentifyJsonToken(s);
+                        if (!TryIdentifyJsonToken(s, inString, out var jsonTokenType))
+                        {
+                            return false;
+                        }
                         try
                         {
                             jsonTokens.Add(new JsonToken(jsonTokenType, s));
@@ -148,26 +151,36 @@ namespace JsonProject
             return true;
         }
 
-        private static JsonTokenType IdentifyJsonToken(string s)
+        private static bool TryIdentifyJsonToken(string s, bool inString, out JsonTokenType jsonTokenType)
         {
-            if (s == "true")
+            if (inString)
             {
-                return JsonTokenType.True;
+                jsonTokenType = JsonTokenType.String;
+                return true;
+            }
+            else if (s == "true")
+            {
+                jsonTokenType = JsonTokenType.True;
+                return true;
             }
             else if (s == "false")
             {
-                return JsonTokenType.False;
+                jsonTokenType = JsonTokenType.False;
+                return true;
             }
             else if (s == "null")
             {
-                return JsonTokenType.Null;
+                jsonTokenType = JsonTokenType.Null;
+                return true;
             }
             else if (JsonToken.IsValidNum(s))
             {
-                return JsonTokenType.Number;
+                jsonTokenType = JsonTokenType.Number;
+                return true;
             }
 
-            return JsonTokenType.String;
+            jsonTokenType = JsonTokenType.String;
+            return false;
         }
 
         private static string CreateIndent(int tabSize, int level)

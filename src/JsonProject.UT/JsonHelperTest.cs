@@ -45,7 +45,7 @@ namespace JsonProject.UT
             };
 
             // execute
-            var output = JsonHelper.TryTokenize(input, out var jsonTokens);
+            var output = JsonHelper.TryTokenize(input, out var jsonTokens, out var error);
 
             // verify
             Assert.Equal(expectedAns, output);
@@ -61,13 +61,13 @@ namespace JsonProject.UT
         {
             // setup
             var input = "{   \"hello\"   :  [   1.2.3 , \"world  \"  ]  }";
-            var expectedAns = true;
+            var expectedAns = false;
 
             // execute
-            var output = JsonHelper.TryTokenize(input, out var jsonTokens);
+            var output = JsonHelper.TryTokenize(input, out var jsonTokens, out var error);
 
             // verify
-            Assert.Equal(!expectedAns, output);
+            Assert.Equal(expectedAns, output);
         }
     }
 }

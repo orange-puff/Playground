@@ -88,7 +88,7 @@ namespace JsonProject
         /// <summary>
         /// Returns true if this is a valid Json string
         /// </summary>
-        public bool IsValidString(string s)
+        public static bool IsValidString(string s)
         {
             if (s.Length < 2)
             {

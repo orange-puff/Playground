@@ -19,7 +19,7 @@ function Editor(props: React.PropsWithChildren<IEditorProps>) {
         if (typeof (value) === 'string') {
             handleChange(value);
         }
-    }, [value])
+    }, [value]);
 
     function handleChange(val: string) {
         const splitLines = val.split('\n');

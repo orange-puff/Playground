@@ -21,6 +21,21 @@ namespace JsonProject.UT
             Assert.Equal(expected, ans);
         }
 
+        [Theory]
+        [InlineData("\"ab\"", true)]
+        [InlineData("\"asdasdasd adas da sda da\\\" asdasdsadasd", false)]
+        [InlineData("\"asdasdasd adas da sda da\\\" asdasdsadasd\"", true)]
+        [InlineData("", false)]
+        [InlineData("\"\"", true)]
+        public void is_valid_string_test(string input, bool expected)
+        {
+            // execute
+            var ans = JsonToken.IsValidString(input);
+
+            // verify
+            Assert.Equal(expected, ans);
+        }
+
         [Fact]
         public void try_tokenize_with_valid_input()
         {
@@ -70,12 +85,12 @@ namespace JsonProject.UT
         public void try_tokenize_with_valid_input_complex_string()
         {
             // setup
-            var input = "{   \"hello\"   :  [   1.2 , \"world[]{} \"  ]  }";
+            var input = "{   \"hello\\\"bye\"   :  [   1.2 , \"world[]{} \"  ]  }";
             var expectedAns = true;
             var expected = new List<JsonToken>
             {
                 new JsonToken(JsonTokenType.OpenBrace, "{"),
-                new JsonToken(JsonTokenType.String, "\"hello\""),
+                new JsonToken(JsonTokenType.String, "\"hello\\\"bye\""),
                 new JsonToken(JsonTokenType.Colon, ":"),
                 new JsonToken(JsonTokenType.OpenBracket, "["),
                 new JsonToken(JsonTokenType.Number, "1.2"),

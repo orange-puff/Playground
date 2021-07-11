@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace JsonProject
 {
@@ -58,18 +59,29 @@ namespace JsonProject
         /// <summary>
         /// Given a Json, try to format it. Return means the json is invalid. Returns formatted json or error
         /// </summary>
-        public static bool TryFormat(out string result)
+        public static bool TryFormat(string json, out string result)
         {
-            result = "\"hello\": 1, 2, 3";
-            result += "\n          ^ expected }";
+            if (!TryTokenize(json, out var jsonTokens, out var error))
+            {
+                result = error;
+                return false;
+            }
+
+            result = "GOOD ONE!";
+            return true;
+        }
+
+        private static bool TryFormateCore(List<JsonToken> jsonTokens, int currIndex, StringBuilder curr, bool objectParent, bool listParent, int tabSize, int level)
+        {
             return false;
         }
 
         /// <summary>
         /// Given a Json, try to tokenize it into separate JsonToken. Return false means some incorrect input prevents us from tokenizing
         /// </summary>
-        public static bool TryTokenize(string json, out List<JsonToken> jsonTokens)
+        public static bool TryTokenize(string json, out List<JsonToken> jsonTokens, out string error)
         {
+            error = string.Empty;
             jsonTokens = new List<JsonToken>();
             var i = 0;
             var curr = new List<char>();
@@ -82,7 +94,16 @@ namespace JsonProject
                     {
                         var s = new string(curr.ToArray());
                         var jsonTokenType = IdentifyJsonToken(s);
-                        jsonTokens.Add(new JsonToken(jsonTokenType, s));
+                        try
+                        {
+                            jsonTokens.Add(new JsonToken(jsonTokenType, s));
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            error = ex.ToString();
+                            return false;
+                        }
+
                         curr = new List<char>();
                     }
                 }
@@ -147,6 +168,17 @@ namespace JsonProject
             }
 
             return JsonTokenType.String;
+        }
+
+        private static string CreateIndent(int tabSize, int level)
+        {
+            var tot = tabSize * level;
+            var array = new char[tot];
+            for (int i = 0; i < tot; i++)
+            {
+                array[i] = ' ';
+            }
+            return new string(array);
         }
     }
 }

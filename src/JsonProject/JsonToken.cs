@@ -17,10 +17,13 @@ namespace JsonProject
         Comma = 11
     }
 
+    /// <summary>
+    /// Represents a valid token in a Json. Eeach instance is validated.
+    /// </summary>
     public class JsonToken : IEquatable<JsonToken>
     {
-        public JsonTokenType Type { get; set; }
-        public string Value { get; set; } = null!;
+        public JsonTokenType Type { get; }
+        public string Value { get; } = null!;
 
         public JsonToken(JsonTokenType type, string value = "")
         {
@@ -104,7 +107,7 @@ namespace JsonProject
             {
                 throw new ArgumentException();
             }
-            else if (type == JsonTokenType.Null)
+            else if (type == JsonTokenType.Null && value != "null")
             {
                 throw new ArgumentException();
             }

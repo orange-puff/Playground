@@ -65,29 +65,6 @@ namespace JsonProject
             return false;
         }
 
-
-        private static JsonTokenType IdentifyJsonToken(string s)
-        {
-            if (s == "true")
-            {
-                return JsonTokenType.True;
-            }
-            else if (s == "false")
-            {
-                return JsonTokenType.False;
-            }
-            else if (s == "null")
-            {
-                return JsonTokenType.Null;
-            }
-            else if (JsonToken.IsValidNum(s))
-            {
-                return JsonTokenType.Number;
-            }
-
-            return JsonTokenType.String;
-        }
-
         /// <summary>
         /// Given a Json, try to tokenize it into separate JsonToken. Return false means some incorrect input prevents us from tokenizing
         /// </summary>
@@ -148,6 +125,28 @@ namespace JsonProject
             }
 
             return true;
+        }
+
+        private static JsonTokenType IdentifyJsonToken(string s)
+        {
+            if (s == "true")
+            {
+                return JsonTokenType.True;
+            }
+            else if (s == "false")
+            {
+                return JsonTokenType.False;
+            }
+            else if (s == "null")
+            {
+                return JsonTokenType.Null;
+            }
+            else if (JsonToken.IsValidNum(s))
+            {
+                return JsonTokenType.Number;
+            }
+
+            return JsonTokenType.String;
         }
     }
 }

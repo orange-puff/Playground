@@ -8,11 +8,12 @@ namespace JsonProject
         OpenBracket = 2,
         CloseBracket = 3,
         Quote = 4,
-        String = 5,
-        Number = 6,
-        True = 7,
-        False = 8,
-        Null = 9
+        Colon = 5,
+        String = 6,
+        Number = 7,
+        True = 8,
+        False = 9,
+        Null = 10
     }
 
     public class JsonToken

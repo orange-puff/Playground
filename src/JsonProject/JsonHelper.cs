@@ -52,8 +52,9 @@ namespace JsonProject
     /// </summary>
     public static class JsonHelper
     {
+        private static readonly List<char> _badInStringChars = new List<char>{'\\', '\t', '\n'};
         /// <summary>
-        /// Given a Json, try to format it. A failure to format means the json is invalid. Returns formatted json or error
+        /// Given a Json, try to format it. Return means the json is invalid. Returns formatted json or error
         /// </summary>
         public static bool TryFormat(out string result)
         {
@@ -62,13 +63,86 @@ namespace JsonProject
             return false;
         }
 
+        /// <summary>
+        /// Returns true if this is a valid number
+        /// </summary>
+        public static bool IsValidNum(string s)
+        {
+            if (s[0] < '1' || s[0] > '9')
+            {
+                return false;
+            }
+            var numDecimals = 0;
+            foreach (var c in s)
+            {
+                if (c == '.')
+                {
+                    numDecimals++;
+                }
+                else if (c < '0' || c > '9')
+                {
+                    return false;
+                }
+            }
+            if (numDecimals > 1 || s[-1] == '.')
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Given a Json, try to tokenize it into separate JsonToken. Return false means some incorrect input prevents us from tokenizing
+        /// </summary>
         public static bool TryTokenize(string json, out List<JsonToken> jsonTokens)
         {
             jsonTokens = new List<JsonToken>();
             var inString = false;
-            var inNum = false;
-            for (int i = 0; i < json.Length; i++)
+            var i = 0;
+            var curr = new List<char>();
+            while (i < json.Length)
             {
+                if (inString)
+                {
+                    if (curr.Count > 0)
+                    {
+                        var tmp = new string(curr.ToArray());
+                        if (tmp == "true")
+                        {
+                            jsonTokens.Add(new JsonToken(JsonTokenType.True, tmp));
+                        }
+                        else if (tmp == "false")
+                        {
+                            jsonTokens.Add(new JsonToken(JsonTokenType.False, tmp));
+                        }
+                        else if (tmp == "null")
+                        {
+                            jsonTokens.Add(new JsonToken(JsonTokenType.Null, tmp));
+                        }
+                        else if (IsValidNum(tmp))
+                        {
+                            jsonTokens.Add(new JsonToken(JsonTokenType.Number, tmp));
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+
+                    var j = i;
+                    curr = new List<char>();
+                    while (j < json.Length && (json[i] != '"' || json[i-1] == '\\'))
+                    {
+                        curr.Add(json[i]);
+                        j++;
+                    }
+                    jsonTokens.Add(new JsonToken(JsonTokenType.String, new string(curr.ToArray())));
+
+                    i = j;
+                    curr = new List<char>();
+                    continue;
+                }
+
                 if (json[i] == '{')
                 {
                     jsonTokens.Add(new JsonToken(JsonTokenType.OpenBrace, "{"));
@@ -90,6 +164,12 @@ namespace JsonProject
                     jsonTokens.Add(new JsonToken(JsonTokenType.Quote, "\""));
                     inString = !inString;
                 }
+                else if (json[i] == ':')
+                {
+                    jsonTokens.Add(new JsonToken(JsonTokenType.Colon, ":"));
+                }
+
+                i++;
             }
 
             return true;

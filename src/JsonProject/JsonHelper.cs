@@ -54,7 +54,7 @@ namespace JsonProject
     public static class JsonHelper
     {
         private static readonly List<char> _offensiveCharacters = new List<char> { '\\', '\t', '\n', ' ' };
-        private static readonly List<char> _jsonTokens = new List<char> { '{', '}', '[', ']', ':', ',', '"' };
+        private static readonly List<char> _jsonTokens = new List<char> { '{', '}', '[', ']', ':', ',' };
 
         /// <summary>
         /// Given a Json, try to format it. Return means the json is invalid. Returns formatted json or error
@@ -85,15 +85,38 @@ namespace JsonProject
             jsonTokens = new List<JsonToken>();
             var i = 0;
             var curr = new List<char>();
-            var inString = false;
             while (i < json.Length)
             {
+                // handling string amongst everything else is too tricky. Just handle it seperately
+                if (json[i] == '"')
+                {
+                    if (curr.Count != 0)
+                    {
+                        return false;
+                    }
+
+                    var j = i;
+                    while (j < json.Length)
+                    {
+                        curr.Add(json[j]);
+                        if (j > 0 && j != i && json[j] == '"' && json[j - 1] != '\\')
+                        {
+                            break;
+                        }
+                        j++;
+                    }
+                    i = j + 1;
+                    jsonTokens.Add(new JsonToken(JsonTokenType.String, new string(curr.ToArray())));
+                    curr = new List<char>();
+                    continue;
+                }
+
                 if (_jsonTokens.Contains(json[i]))
                 {
                     if (curr.Count > 0)
                     {
                         var s = new string(curr.ToArray());
-                        if (!TryIdentifyJsonToken(s, inString, out var jsonTokenType))
+                        if (!TryIdentifyJsonToken(s, out var jsonTokenType))
                         {
                             return false;
                         }
@@ -111,36 +134,31 @@ namespace JsonProject
                     }
                 }
 
-                if (json[i] == '"')
+                if (json[i] == '{')
                 {
-                    inString = !inString;
-                    jsonTokens.Add(new JsonToken(JsonTokenType.Quote, "\""));
-                }
-                else if (json[i] == '{')
-                {
-                    jsonTokens.Add(new JsonToken(JsonTokenType.OpenBrace, "{"));
+                    jsonTokens.Add(new JsonToken(JsonTokenType.OpenBrace));
                 }
                 else if (json[i] == '}')
                 {
-                    jsonTokens.Add(new JsonToken(JsonTokenType.CloseBrace, "}"));
+                    jsonTokens.Add(new JsonToken(JsonTokenType.CloseBrace));
                 }
                 else if (json[i] == '[')
                 {
-                    jsonTokens.Add(new JsonToken(JsonTokenType.OpenBracket, "["));
+                    jsonTokens.Add(new JsonToken(JsonTokenType.OpenBracket));
                 }
                 else if (json[i] == ']')
                 {
-                    jsonTokens.Add(new JsonToken(JsonTokenType.CloseBracket, "]"));
+                    jsonTokens.Add(new JsonToken(JsonTokenType.CloseBracket));
                 }
                 else if (json[i] == ':')
                 {
-                    jsonTokens.Add(new JsonToken(JsonTokenType.Colon, ":"));
+                    jsonTokens.Add(new JsonToken(JsonTokenType.Colon));
                 }
                 else if (json[i] == ',')
                 {
-                    jsonTokens.Add(new JsonToken(JsonTokenType.Comma, ","));
+                    jsonTokens.Add(new JsonToken(JsonTokenType.Comma));
                 }
-                else if (inString || !_offensiveCharacters.Contains(json[i]))
+                else if (!_offensiveCharacters.Contains(json[i]))
                 {
                     curr.Add(json[i]);
                 }
@@ -151,14 +169,9 @@ namespace JsonProject
             return true;
         }
 
-        private static bool TryIdentifyJsonToken(string s, bool inString, out JsonTokenType jsonTokenType)
+        private static bool TryIdentifyJsonToken(string s, out JsonTokenType jsonTokenType)
         {
-            if (inString)
-            {
-                jsonTokenType = JsonTokenType.String;
-                return true;
-            }
-            else if (s == "true")
+            if (s == "true")
             {
                 jsonTokenType = JsonTokenType.True;
                 return true;
@@ -178,9 +191,11 @@ namespace JsonProject
                 jsonTokenType = JsonTokenType.Number;
                 return true;
             }
-
-            jsonTokenType = JsonTokenType.String;
-            return false;
+            else
+            {
+                jsonTokenType = JsonTokenType.Null;
+                return false;
+            }
         }
 
         private static string CreateIndent(int tabSize, int level)

@@ -7,14 +7,13 @@ namespace JsonProject
         CloseBrace = 1,
         OpenBracket = 2,
         CloseBracket = 3,
-        Quote = 4,
-        Colon = 5,
-        String = 6,
-        Number = 7,
-        True = 8,
-        False = 9,
-        Null = 10,
-        Comma = 11
+        Colon = 4,
+        String = 5,
+        Number = 6,
+        True = 7,
+        False = 8,
+        Null = 9,
+        Comma = 10
     }
 
     /// <summary>
@@ -43,9 +42,6 @@ namespace JsonProject
                 case JsonTokenType.CloseBracket:
                     Value = "]";
                     return;
-                case JsonTokenType.Quote:
-                    Value = "\"";
-                    return;
                 case JsonTokenType.Colon:
                     Value = ":";
                     return;
@@ -62,7 +58,7 @@ namespace JsonProject
         }
 
         /// <summary>
-        /// Returns true if this is a valid number
+        /// Returns true if this is a valid Json number
         /// </summary>
         public static bool IsValidNum(string s)
         {
@@ -89,15 +85,31 @@ namespace JsonProject
             return true;
         }
 
+        /// <summary>
+        /// Returns true if this is a valid Json string
+        /// </summary>
+        public bool IsValidString(string s)
+        {
+            if (s.Length < 2)
+            {
+                return false;
+            }
+            if (s[0] != '"' || s[s.Length - 1] != '"')
+            {
+                return false;
+            }
+            return true;
+        }
+
         private void Validate(JsonTokenType type, string value)
         {
             if (type == JsonTokenType.Number && !IsValidNum(value))
             {
                 throw new ArgumentException();
             }
-            else if (type == JsonTokenType.String)
+            else if (type == JsonTokenType.String && !IsValidString(value))
             {
-
+                throw new ArgumentException();
             }
             else if (type == JsonTokenType.True && value != "true")
             {

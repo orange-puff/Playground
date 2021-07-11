@@ -52,9 +52,6 @@ namespace JsonProject.UT
             Assert.Equal(expected.Count, jsonTokens.Count);
             for (int i = 0; i < expected.Count; i++)
             {
-                if (!expected[i].Equals(jsonTokens[i]))
-                {
-                }
                 Assert.True(expected[i].Equals(jsonTokens[i]));
             }
         }

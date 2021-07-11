@@ -73,12 +73,24 @@ namespace JsonProject.UT
             // setup
             var input = "{   \"hello\"   :  [   1.2.3 , \"world  \"  ]  }";
             var expectedAns = false;
+            var expected = new List<JsonToken>
+            {
+                new JsonToken(JsonTokenType.OpenBrace, "{"),
+                new JsonToken(JsonTokenType.String, "\"hello\""),
+                new JsonToken(JsonTokenType.Colon, ":"),
+                new JsonToken(JsonTokenType.OpenBracket, "[")
+            };
 
             // execute
             var output = JsonHelper.TryTokenize(input, out var jsonTokens, out var error);
 
             // verify
             Assert.Equal(expectedAns, output);
+            Assert.Equal(expected.Count, jsonTokens.Count);
+            for (int i = 0; i < expected.Count; i++)
+            {
+                Assert.True(expected[i].Equals(jsonTokens[i]));
+            }
         }
 
         [Fact]
@@ -98,6 +110,29 @@ namespace JsonProject.UT
                 new JsonToken(JsonTokenType.String, "\"world[]{} \""),
                 new JsonToken(JsonTokenType.CloseBracket, "]"),
                 new JsonToken(JsonTokenType.CloseBrace, "}")
+            };
+
+            // execute
+            var output = JsonHelper.TryTokenize(input, out var jsonTokens, out var error);
+
+            // verify
+            Assert.Equal(expectedAns, output);
+            Assert.Equal(expected.Count, jsonTokens.Count);
+            for (int i = 0; i < expected.Count; i++)
+            {
+                Assert.True(expected[i].Equals(jsonTokens[i]));
+            }
+        }
+
+        [Fact]
+        public void try_tokenize_with_invalid_input_complex_string_with_offensive_characters()
+        {
+            // setup
+            var input = "{ \"\n\t\": 1.2  }";
+            var expectedAns = false;
+            var expected = new List<JsonToken>
+            {
+                new JsonToken(JsonTokenType.OpenBrace, "{")
             };
 
             // execute

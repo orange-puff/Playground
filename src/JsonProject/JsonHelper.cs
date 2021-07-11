@@ -106,7 +106,15 @@ namespace JsonProject
                         j++;
                     }
                     i = j + 1;
-                    jsonTokens.Add(new JsonToken(JsonTokenType.String, new string(curr.ToArray())));
+                    try
+                    {
+                        jsonTokens.Add(new JsonToken(JsonTokenType.String, new string(curr.ToArray())));
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        error = ex.ToString();
+                        return false;
+                    }
                     curr = new List<char>();
                     continue;
                 }

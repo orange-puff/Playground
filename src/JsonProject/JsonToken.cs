@@ -98,6 +98,15 @@ namespace JsonProject
             {
                 return false;
             }
+
+            for (int i = 1; i < s.Length - 1; i++)
+            {
+                if (s[i] == '\t' || s[i] == '\n' || s[i] == '\0')
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 

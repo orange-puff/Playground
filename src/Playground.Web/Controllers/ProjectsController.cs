@@ -3,8 +3,6 @@ using Microsoft.Extensions.Logging;
 using Playground.EF;
 using Playground.Web.Models.JsonProjectModels;
 using JsonProject;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Playground.Web.Controllers
 {
@@ -25,7 +23,6 @@ namespace Playground.Web.Controllers
         [HttpPost("[controller]/json_project")]
         public IActionResult JsonProject(JsonProjectModel json)
         {
-            var x = new List<char>(json.Json.ToCharArray()).Select(c => (int)c).ToList();
             if (JsonHelper.TryFormat(json.Json, out var result))
             {
                 return Ok(new JsonProjectModel

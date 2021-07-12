@@ -66,7 +66,7 @@ const JsonProject = () => {
         fetch('/api/projects/json_project', requestOptions)
             .then(res => res.json())
             .then(data => 'error' in data ? setError(data.error) : setOutput(data.json))
-            .catch(error => console.log(error));
+            .catch(err => console.log(err));
     }
 
     return (

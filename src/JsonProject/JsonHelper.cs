@@ -92,6 +92,7 @@ namespace JsonProject
                 {
                     if (curr.Count != 0)
                     {
+                        error = GenerateTryTokenizeError(jsonTokens, new string(curr.ToArray()));
                         return false;
                     }
 
@@ -106,13 +107,14 @@ namespace JsonProject
                         j++;
                     }
                     i = j + 1;
+                    var s = new string(curr.ToArray());
                     try
                     {
-                        jsonTokens.Add(new JsonToken(JsonTokenType.String, new string(curr.ToArray())));
+                        jsonTokens.Add(new JsonToken(JsonTokenType.String, s));
                     }
-                    catch (ArgumentException ex)
+                    catch (ArgumentException)
                     {
-                        error = ex.ToString();
+                        error = GenerateTryTokenizeError(jsonTokens, s);
                         return false;
                     }
                     curr = new List<char>();
@@ -124,17 +126,14 @@ namespace JsonProject
                     if (curr.Count > 0)
                     {
                         var s = new string(curr.ToArray());
-                        if (!TryIdentifyJsonToken(s, out var jsonTokenType))
-                        {
-                            return false;
-                        }
+                        var jsonTokenType = IdentifyJsonToken(s);
                         try
                         {
                             jsonTokens.Add(new JsonToken(jsonTokenType, s));
                         }
-                        catch (ArgumentException ex)
+                        catch (ArgumentException)
                         {
-                            error = ex.ToString();
+                            error = GenerateTryTokenizeError(jsonTokens, s);
                             return false;
                         }
 
@@ -177,32 +176,44 @@ namespace JsonProject
             return true;
         }
 
-        private static bool TryIdentifyJsonToken(string s, out JsonTokenType jsonTokenType)
+        private static string GenerateTryTokenizeError(List<JsonToken> jsonTokens, string token)
+        {
+            var error = string.Empty;
+
+            var bottomLine = "\n";
+            for (int k = Math.Max(0, jsonTokens.Count - 2); k < jsonTokens.Count; k++)
+            {
+                error += $"{jsonTokens[k].Value} ";
+                foreach (var c in jsonTokens[k].Value)
+                {
+                    bottomLine += " ";
+                }
+            }
+
+            error += $"{token}";
+            bottomLine += "  ^ Error\n";
+            error += bottomLine;
+
+            return error;
+        }
+
+        private static JsonTokenType IdentifyJsonToken(string s)
         {
             if (s == "true")
             {
-                jsonTokenType = JsonTokenType.True;
-                return true;
+                return JsonTokenType.True;
             }
             else if (s == "false")
             {
-                jsonTokenType = JsonTokenType.False;
-                return true;
+                return JsonTokenType.False;
             }
             else if (s == "null")
             {
-                jsonTokenType = JsonTokenType.Null;
-                return true;
-            }
-            else if (JsonToken.IsValidNum(s))
-            {
-                jsonTokenType = JsonTokenType.Number;
-                return true;
+                return JsonTokenType.Null;
             }
             else
             {
-                jsonTokenType = JsonTokenType.Null;
-                return false;
+                return JsonTokenType.Number;
             }
         }
 

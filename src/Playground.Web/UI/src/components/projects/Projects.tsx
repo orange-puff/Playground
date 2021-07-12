@@ -7,7 +7,7 @@ const Projects = () => {
         <div>
             <p>
                 My Projects
-        </p>
+            </p>
             <ul>
                 <li><Button to="/projects/json_project" component={Link}>Json Project</Button></li>
             </ul>

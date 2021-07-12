@@ -57,6 +57,8 @@ const JsonProject = () => {
     const [error, setError] = useState<string>('');
 
     function validate() {
+        setError('');
+        setOutput('');
         const body: IJsonProjectModel = { json: input };
         const requestOptions = {
             method: 'POST',

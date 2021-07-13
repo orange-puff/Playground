@@ -37,7 +37,6 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
         <div>
             {content.map((buttons, i) => <div className="row" key={i}>{buttons.map(button => button)}</div>)}
             <Button
-                className="clearButton"
                 variant="contained"
                 color="secondary"
                 startIcon={<ClearAllIcon />}

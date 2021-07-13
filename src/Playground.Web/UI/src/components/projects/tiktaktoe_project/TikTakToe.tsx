@@ -28,14 +28,14 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
     for (let i = 0; i < n; i++) {
         const tmp = [];
         for (let j = 0; j < n; j++) {
-            tmp.push(<button className="box" onClick={() => handleClick(i, j)}>{board[i][j]}</button>);
+            tmp.push(<button className="box" key={i.toString() + "|" + j.toString()} onClick={() => handleClick(i, j)}>{board[i][j]}</button>);
         }
         content.push(tmp);
     }
 
     return (
         <div>
-            {content.map(buttons => <div className="row">{buttons.map(button => button)}</div>)}
+            {content.map((buttons, i) => <div className="row" key={i}>{buttons.map(button => button)}</div>)}
             <Button
                 className="clearButton"
                 variant="contained"

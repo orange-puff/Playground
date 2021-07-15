@@ -67,7 +67,14 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
         } as ITikTakToeBoardState;
     }
 
-    function updateBoardState(i: number, j: number, piece: string) {
+    function winPossible(tmpState: ITikTakToeBoardState, tmpBoard: any, piece: string) {
+        const inc = piece === 'X' ? 1 : -1;
+        for (let i = 0; i < n; i++) {
+
+        }
+    }
+
+    function updateBoardState(i: number, j: number, piece: string, tmpBoard: any) {
         const tmp = cloneBoardState();
         tmp.rowSum[i] += piece === 'X' ? 1 : -1;
         tmp.colSum[j] += piece === 'X' ? 1 : -1;
@@ -88,9 +95,10 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
                 tot += board[i][j] !== '' ? 1 : 0;
             }
         }
-        if (tot === n*n - 1 && tmp.gameState === GameState.noWins) {
+        if (tmp.gameState === GameState.noWins || (tot === n * n - 1 && winPossible(tmp, tmpBoard, piece))) {
             tmp.gameState = GameState.tie;
         }
+
 
         setBoardState(tmp);
         updateGameState(tmp.gameState);
@@ -104,9 +112,9 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
         const tmp: any = [];
         board.forEach(row => tmp.push(Object.assign([], row)));
         tmp[i][j] = piece;
-        updateBoardState(i, j, piece);
-        setPiece(piece === 'X' ? 'O' : 'X');
+        updateBoardState(i, j, piece, tmp);
         setBoard(tmp);
+        setPiece(piece === 'X' ? 'O' : 'X');
     }
 
     const content = [];

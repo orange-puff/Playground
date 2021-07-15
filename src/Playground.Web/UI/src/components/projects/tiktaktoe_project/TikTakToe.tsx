@@ -88,7 +88,7 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
                 tot += board[i][j] !== '' ? 1 : 0;
             }
         }
-        if (tot === n*n - 1) {
+        if (tot === n*n - 1 && tmp.gameState === GameState.noWins) {
             tmp.gameState = GameState.tie;
         }
 
@@ -121,7 +121,9 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
     return (
         <div className="tiktaktoe">
             {content.map((buttons, i) => <div className="row" key={i}>{buttons.map(button => button)}</div>)}
+            <p>{gameState}</p>
             <Button
+                className="clearButton"
                 variant="contained"
                 color="secondary"
                 startIcon={<ClearAllIcon />}
@@ -129,7 +131,6 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
             >
                 Clear
             </Button>
-            <p>{gameState}</p>
         </div>
     );
 }

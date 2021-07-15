@@ -15,9 +15,9 @@ const TikTakToeProject = () => {
     return (
         <div>
             <Typography variant="h3" component="h3" gutterBottom className={styles.title}>
-                Json Project
+                TikTakToe Project
             </Typography>
-            <TikTakToe n={3} />
+            <TikTakToe n={4} />
         </div>
     );
 }

@@ -13,8 +13,15 @@ interface ITikTakToeBoardState {
     colSum: number[],
     mainDiagSum: number,
     offDiagSum: number,
-    gameOver: boolean,
+    gameState: GameState,
     winningPiece: string
+}
+
+enum GameState {
+    noWins = 0,
+    xWins = 1,
+    oWins = 2,
+    tie = 3
 }
 
 const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
@@ -22,6 +29,19 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
     const [board, setBoard] = useState(Array(n).fill(Array(n).fill('')));
     const [piece, setPiece] = useState('X');
     const [boardState, setBoardState] = useState<ITikTakToeBoardState>(emptyBoardState());
+    const [gameState, setGameState] = useState('Game On!');
+
+    function updateGameState(gameState: GameState) {
+        if (gameState === GameState.xWins) {
+            setGameState("X Wins!");
+        }
+        else if (gameState === GameState.oWins) {
+            setGameState("O Wins!");
+        }
+        else if (gameState === GameState.tie) {
+            setGameState("Tie!");
+        }
+    }
 
     function emptyBoardState() {
         return {
@@ -30,7 +50,7 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
             colSum: Array(n).fill(0),
             mainDiagSum: 0,
             offDiagSum: 0,
-            gameOver: false,
+            gameState: GameState.noWins,
             winningPiece: ''
         } as ITikTakToeBoardState;
     }
@@ -42,31 +62,42 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
             colSum: Object.assign([], boardState.colSum),
             mainDiagSum: boardState.mainDiagSum,
             offDiagSum: boardState.offDiagSum,
-            gameOver: boardState.gameOver,
+            gameState: boardState.gameState,
             winningPiece: boardState.winningPiece
         } as ITikTakToeBoardState;
     }
 
     function updateBoardState(i: number, j: number, piece: string) {
         const tmp = cloneBoardState();
-        tmp.rowSum[i] += piece == 'X' ? 1 : -1;
-        tmp.colSum[j] += piece == 'X' ? 1 : -1;
+        tmp.rowSum[i] += piece === 'X' ? 1 : -1;
+        tmp.colSum[j] += piece === 'X' ? 1 : -1;
         if (i === j) {
-            tmp.mainDiagSum += piece == 'X' ? 1 : -1;
+            tmp.mainDiagSum += piece === 'X' ? 1 : -1;
         }
-        if (Math.abs(tmp.n - 1 - j) == i) {
-            tmp.offDiagSum += piece == 'X' ? 1 : -1;
+        if (Math.abs(tmp.n - 1 - j) === i) {
+            tmp.offDiagSum += piece === 'X' ? 1 : -1;
         }
         if (Math.abs(tmp.rowSum[i]) === tmp.n || Math.abs(tmp.colSum[j]) === tmp.n || Math.abs(tmp.mainDiagSum) === tmp.n || Math.abs(tmp.offDiagSum) === tmp.n) {
-            tmp.gameOver = true;
+            tmp.gameState = piece === 'X' ? GameState.xWins : GameState.oWins;
             tmp.winningPiece = piece;
         }
 
+        var tot = 0;
+        for (let i = 0; i < n; i++) {
+            for (let j = 0; j < n; j++) {
+                tot += board[i][j] !== '' ? 1 : 0;
+            }
+        }
+        if (tot === n*n - 1) {
+            tmp.gameState = GameState.tie;
+        }
+
         setBoardState(tmp);
+        updateGameState(tmp.gameState);
     }
 
     function handleClick(i: number, j: number) {
-        if (board[i][j] != '' || boardState.gameOver) {
+        if (board[i][j] !== '' || boardState.gameState !== GameState.noWins) {
             return;
         }
 
@@ -88,7 +119,7 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
     }
 
     return (
-        <div>
+        <div className="tiktaktoe">
             {content.map((buttons, i) => <div className="row" key={i}>{buttons.map(button => button)}</div>)}
             <Button
                 variant="contained"
@@ -97,11 +128,8 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
                 onClick={() => { setPiece('X'); setBoard(Array(n).fill(Array(n).fill(''))); setBoardState(emptyBoardState()) }}
             >
                 Clear
-                </Button>
-            {boardState.gameOver
-                ? <p>Game Over! {boardState.winningPiece} Wins!</p>
-                : <p> Game On!</p>
-            }
+            </Button>
+            <p>{gameState}</p>
         </div>
     );
 }

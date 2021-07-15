@@ -7,7 +7,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Editor from '../../editor/Editor';
-import { request } from 'https';
 import './JsonProject.css';
 
 const useStyles = makeStyles((theme) => ({

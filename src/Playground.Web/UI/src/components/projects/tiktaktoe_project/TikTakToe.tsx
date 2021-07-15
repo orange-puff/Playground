@@ -49,15 +49,15 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
 
     function updateBoardState(i: number, j: number, piece: string) {
         const tmp = cloneBoardState();
-        tmp.rowSum[i] += 1;
-        tmp.colSum[j] += 1;
+        tmp.rowSum[i] += piece == 'X' ? 1 : -1;
+        tmp.colSum[j] += piece == 'X' ? 1 : -1;
         if (i === j) {
-            tmp.mainDiagSum += 1;
+            tmp.mainDiagSum += piece == 'X' ? 1 : -1;
         }
         if (Math.abs(tmp.n - 1 - j) == i) {
-            tmp.offDiagSum += 1;
+            tmp.offDiagSum += piece == 'X' ? 1 : -1;
         }
-        if (tmp.rowSum[i] === tmp.n || tmp.colSum[j] === tmp.n || tmp.mainDiagSum === tmp.n || tmp.offDiagSum === tmp.n) {
+        if (Math.abs(tmp.rowSum[i]) === tmp.n || Math.abs(tmp.colSum[j]) === tmp.n || Math.abs(tmp.mainDiagSum) === tmp.n || Math.abs(tmp.offDiagSum) === tmp.n) {
             tmp.gameOver = true;
             tmp.winningPiece = piece;
         }

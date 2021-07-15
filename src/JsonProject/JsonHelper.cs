@@ -173,6 +173,12 @@ namespace JsonProject
                 i++;
             }
 
+            if (curr.Count > 0)
+            {
+                error = "Invalid";
+                return false;
+            }
+
             return true;
         }
 

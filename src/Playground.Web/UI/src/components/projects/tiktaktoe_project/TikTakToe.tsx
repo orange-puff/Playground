@@ -68,6 +68,18 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
     }
 
     function winPossible(tmpState: ITikTakToeBoardState, tmpBoard: any, piece: string) {
+        let remainingEmpty = 0;
+        for (let i = 0; i < n; i++)
+        {
+            for (let j = 0; j < n; j++) {
+                if (tmpBoard[i][j] === '') {
+                    remainingEmpty++;
+                }
+            }
+        }
+
+        /* get numMovesLeft for player to figure out if it's possible to win */
+        const numMovesLeft = Math.floor((n * n - remainingEmpty) / 2);
         const inc = piece === 'X' ? 1 : -1;
         for (let i = 0; i < n; i++) {
 

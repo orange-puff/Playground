@@ -17,7 +17,7 @@ const TikTakToeProject = () => {
             <Typography variant="h3" component="h3" gutterBottom className={styles.title}>
                 TikTakToe Project
             </Typography>
-            <TikTakToe n={4} />
+            <TikTakToe n={3} />
         </div>
     );
 }

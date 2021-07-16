@@ -39,7 +39,7 @@ function numMovesLeft(board: string[][], n: number, offset: number) {
 }
 
 function winPossible(state: ITikTakToeBoardState, inc: number, movesLeft: number): boolean {
-    //console.log(state.piece);
+    console.log(state.piece);
     /* find if a row win is possible */
     for (let i = 0; i < state.n; i++) {
         let totEmpty = 0;
@@ -47,7 +47,7 @@ function winPossible(state: ITikTakToeBoardState, inc: number, movesLeft: number
             totEmpty += state.board[i][j] === '' ? inc : 0;
         }
         if (Math.abs(totEmpty) < movesLeft && Math.abs(state.rowSum[i] + totEmpty) === state.n) {
-            //console.log(`Row ${i} Empty in Row: ${totEmpty} Row Sum: ${state.rowSum[i]}`);
+            console.log(`Row ${i} Empty in Row: ${totEmpty} Row Sum: ${state.rowSum[i]}`);
             return true;
         }
     }
@@ -59,7 +59,7 @@ function winPossible(state: ITikTakToeBoardState, inc: number, movesLeft: number
             totEmpty += state.board[j][i] === '' ? inc : 0;
         }
         if (Math.abs(totEmpty) < movesLeft && Math.abs(state.colSum[i] + totEmpty) === state.n) {
-            //console.log(`Col ${i} Empty in Col: ${totEmpty} Col Sum: ${state.colSum[i]}`);
+            console.log(`Col ${i} Empty in Col: ${totEmpty} Col Sum: ${state.colSum[i]}`);
             return true;
         }
     }
@@ -73,7 +73,7 @@ function winPossible(state: ITikTakToeBoardState, inc: number, movesLeft: number
         j++;
     }
     if (Math.abs(totEmpty) < movesLeft && Math.abs(state.mainDiagSum + totEmpty) === state.n) {
-        //console.log(`Empty in Main Diag: ${totEmpty} Main Diag Sum: ${state.mainDiagSum}`);
+        console.log(`Empty in Main Diag: ${totEmpty} Main Diag Sum: ${state.mainDiagSum}`);
         return true;
     }
 
@@ -85,7 +85,7 @@ function winPossible(state: ITikTakToeBoardState, inc: number, movesLeft: number
         i++;
         j--;
     }
-    //console.log(`Empty in Off Diag: ${totEmpty} Off Diag Sum: ${state.offDiagSum}`);
+    console.log(`Empty in Off Diag: ${totEmpty} Off Diag Sum: ${state.offDiagSum}`);
     return Math.abs(totEmpty) < movesLeft && Math.abs(state.offDiagSum + totEmpty) === state.n;
 }
 
@@ -120,22 +120,6 @@ function cloneBoardState(boardState: ITikTakToeBoardState) {
 const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
     const { n } = props;
     const [boardState, setBoardState] = useState<ITikTakToeBoardState>(emptyBoardState(n));
-    const [gameState, setGameState] = useState('Game On!');
-
-    function updateGameState(gameState: GameState) {
-        if (gameState === GameState.xWins) {
-            setGameState("X Wins!");
-        }
-        else if (gameState === GameState.oWins) {
-            setGameState("O Wins!");
-        }
-        else if (gameState === GameState.tie) {
-            setGameState("Tie!");
-        }
-        else {
-            setGameState("Game On!");
-        }
-    }
 
     function updateBoardState(i: number, j: number) {
         const tmpBoard: any = [];
@@ -167,9 +151,10 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
         if (tot === 0 || (tmpState.gameState === GameState.on && !winPossible(tmpState, tmpState.piece === 'X' ? 1 : -1, numMovesLeft(tmpBoard, n, 0)) && !winPossible(tmpState, tmpState.piece === 'X' ? -1 : 1, numMovesLeft(tmpBoard, n, 1)))) {
             tmpState.gameState = GameState.tie;
         }
+
+
         tmpState.piece = tmpState.piece === 'X' ? 'O' : 'X';
         setBoardState(tmpState);
-        updateGameState(tmpState.gameState);
     }
 
     function handleClick(i: number, j: number) {
@@ -192,7 +177,7 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
     return (
         <div className="tiktaktoe">
             {content.map((buttons, i) => <div className="row" key={i}>{buttons.map(button => button)}</div>)}
-            <p>{gameState}</p>
+            <p>{boardState.gameState === GameState.on ? "Game On!" : (boardState.gameState === GameState.tie ? "Tie!" : (boardState.gameState === GameState.xWins ? "X Wins!" : "O Wins"))}</p>
             <Button
                 className="clearButton"
                 variant="contained"
@@ -201,7 +186,6 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
                 onClick={() =>
                 {
                     setBoardState(emptyBoardState(n));
-                    updateGameState(GameState.on)
                 }}
             >
                 Clear

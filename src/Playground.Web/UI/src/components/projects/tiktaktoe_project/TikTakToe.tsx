@@ -41,6 +41,9 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
         else if (gameState === GameState.tie) {
             setGameState("Tie!");
         }
+        else {
+            setGameState("Game On!");
+        }
     }
 
     function emptyBoardState() {
@@ -67,7 +70,7 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
         } as ITikTakToeBoardState;
     }
 
-    function winPossible(tmpState: ITikTakToeBoardState, tmpBoard: any, piece: string) {
+    function winPossible(tmpState: ITikTakToeBoardState, tmpBoard: any, piece: string): boolean {
         let remainingEmpty = 0;
         for (let i = 0; i < n; i++)
         {
@@ -79,11 +82,51 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
         }
 
         /* get numMovesLeft for player to figure out if it's possible to win */
-        const numMovesLeft = Math.floor((n * n - remainingEmpty) / 2);
+        const numMovesLeft = Math.floor(remainingEmpty/ 2);
         const inc = piece === 'X' ? 1 : -1;
-        for (let i = 0; i < n; i++) {
 
+        /* find if a row win is possible */
+        for (let i = 0; i < n; i++) {
+            let totEmpty = 0;
+            for (let j = 0; j < n; j++) {
+                totEmpty += tmpBoard[i][j] === '' ? inc : 0;
+            }
+            if (totEmpty < numMovesLeft && Math.abs(tmpState.rowSum[i] + totEmpty) === n) {
+                return true;
+            }
         }
+
+        /* find if a col win is possible */
+        for (let i = 0; i < n; i++) {
+            let totEmpty = 0;
+            for (let j = 0; j < n; j++) {
+                totEmpty += tmpBoard[j][i] === '' ? inc : 0;
+            }
+            if (totEmpty < numMovesLeft && Math.abs(tmpState.colSum[i] + totEmpty) === n) {
+                return true;
+            }
+        }
+
+        let totEmpty = 0;
+        let i = 0;
+        let j = 0;
+        while (i < n && j < n) {
+            totEmpty += tmpBoard[i][j] === '' ? inc : 0;
+            i++;
+            j++;
+        }
+        if (totEmpty < numMovesLeft && Math.abs(tmpState.mainDiagSum + totEmpty) === n) {
+            return true;
+        }
+        totEmpty = 0;
+        i = 0;
+        j = n - 1;
+        while (i < n && j >= 0) {
+            totEmpty += tmpBoard[i][j] === '' ? inc : 0;
+            i++;
+            j--;
+        }
+        return totEmpty < numMovesLeft && Math.abs(tmpState.offDiagSum + totEmpty) === n;
     }
 
     function updateBoardState(i: number, j: number, piece: string, tmpBoard: any) {
@@ -104,14 +147,15 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
         var tot = 0;
         for (let i = 0; i < n; i++) {
             for (let j = 0; j < n; j++) {
-                tot += board[i][j] !== '' ? 1 : 0;
+                tot += tmpBoard[i][j] !== '' ? 1 : 0;
             }
         }
-        if (tmp.gameState === GameState.noWins || (tot === n * n - 1 && winPossible(tmp, tmpBoard, piece))) {
+        if (tot === 0 || (tmp.gameState === GameState.noWins && !winPossible(tmp, tmpBoard, piece) && !winPossible(tmp, tmpBoard, piece === 'X' ? 'O' : 'X'))) {
             tmp.gameState = GameState.tie;
         }
 
-
+        console.log(piece, winPossible(tmp, tmpBoard, piece));
+        console.log(piece === 'X' ? 'O' : 'X', winPossible(tmp, tmpBoard, piece === 'X' ? 'O' : 'X'));
         setBoardState(tmp);
         updateGameState(tmp.gameState);
     }
@@ -147,7 +191,7 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
                 variant="contained"
                 color="secondary"
                 startIcon={<ClearAllIcon />}
-                onClick={() => { setPiece('X'); setBoard(Array(n).fill(Array(n).fill(''))); setBoardState(emptyBoardState()) }}
+                onClick={() => { setPiece('X'); setBoard(Array(n).fill(Array(n).fill(''))); setBoardState(emptyBoardState()); updateGameState(GameState.noWins)}}
             >
                 Clear
             </Button>

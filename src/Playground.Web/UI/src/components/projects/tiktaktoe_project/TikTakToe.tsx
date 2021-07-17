@@ -24,7 +24,7 @@ interface IMove {
     j: number
 }
 
-interface IScoreMove {
+interface IScoreMove extends IMove {
     score: number
 }
 
@@ -34,6 +34,81 @@ enum GameState {
     oWins = 2,
     tie = 3,
     none = 4
+}
+
+function availableMoves(board: string[][], n: number): IMove[] {
+    const toRet: IMove[] = [];
+    for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+            if (board[i][j] === '') {
+                toRet.push({ i: i, j: j } as IMove);
+            }
+        }
+    }
+    return toRet;
+}
+
+function AIMoveCore(boardState: ITikTakToeBoardState, move: IMove, maxi: boolean): IScoreMove {
+    const newBoardState = makeMove(boardState, move);
+
+    if (newBoardState.gameState === GameState.xWins) {
+        return { i: move.i, j: move.j, score: maxi ? 1 : -1 };
+    }
+    else if (newBoardState.gameState === GameState.oWins) {
+        return { i: move.i, j: move.j, score: maxi ? -1 : 1 };
+    }
+    else if (newBoardState.gameState === GameState.tie) {
+        return { i: move.i, j: move.j, score: 0 };
+    }
+
+    let bestMove: IScoreMove = { i: -1, j: -1, score: 0 };
+    let bestScore = -1;
+
+    const availableMoves = availableMoves(boardState.board, boardState.n);
+    availableMoves.forEach(availableMove => {
+        const tmpMove = AIMoveCore(boardState, availableMove, !maxi);
+        if (tmpMove.score > bestScore || bestMove.i === -1) {
+            bestScore = tmpMove.score;
+            bestMove = { i: tmpMove.i, j: tmpMove.j, score: tmpMove.score } as IScoreMove;
+        }
+    });
+
+    unmakeMove(newBoardState, move);
+    return bestMove;
+}
+
+function AIMove(boardState: ITikTakToeBoardState): IMove {
+    const tmpState = cloneBoardState(boardState);
+    let bestMove: IMove = { i: -1, j: -1 };
+    let bestScore = -1;
+
+    const availableMoves = availableMoves(tmpState.board, tmpState.n);
+    availableMoves.forEach(move => {
+        const tmpMove = AIMoveCore(tmpState, move, true);
+        if (tmpMove.score > bestScore || bestMove.i === -1) {
+            bestScore = tmpMove.score;
+            bestMove = { i: tmpMove.i, j: tmpMove.j } as IMove;
+        }
+    });
+
+    return bestMove;
+}
+
+function unmakeMove(boardState: ITikTakToeBoardState, move: IMove): ITikTakToeBoardState {
+    boardState.board[move.i][move.j] = '';
+
+    const inc = boardState.piece === 'X' ? 1 : -1;
+    boardState.rowSum[move.i] -= inc;
+    boardState.colSum[move.j] -= inc;
+    if (move.i === move.j) {
+        boardState.mainDiagSum -= inc;
+    }
+    if (Math.abs(boardState.n - 1 - move.j) === move.i) {
+        boardState.offDiagSum -= inc;
+    }
+
+    boardState.piece = boardState.piece === 'X' ? 'O' : 'X';
+    return boardState;
 }
 
 function makeMove(boardState: ITikTakToeBoardState, move: IMove): ITikTakToeBoardState {
@@ -202,9 +277,9 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
         <div className="tiktaktoe">
             <span>
                 <button onClick={handleStartClick}>Start</button>
-                <input type="radio" id="singlePlayer" checked={boardState.singlePlayer} onChange={() => handleRadioClick(true)} className="radioButton"/>
+                <input type="radio" id="singlePlayer" checked={boardState.singlePlayer} onChange={() => handleRadioClick(true)} className="radioButton" />
                 <label htmlFor="singlePlayer">single player</label>
-                <input type="radio" id="multiPlayer" checked={!boardState.singlePlayer} onChange={() => handleRadioClick(false)} className="radioButton"/>
+                <input type="radio" id="multiPlayer" checked={!boardState.singlePlayer} onChange={() => handleRadioClick(false)} className="radioButton" />
                 <label htmlFor="multiPlayer">multi player</label>
             </span>
             <p>

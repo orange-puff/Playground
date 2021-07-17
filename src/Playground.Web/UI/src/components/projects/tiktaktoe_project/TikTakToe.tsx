@@ -19,12 +19,53 @@ interface ITikTakToeBoardState {
     singlePlayer: boolean
 }
 
+interface IMove {
+    i: number,
+    j: number
+}
+
+interface IScoreMove {
+    score: number
+}
+
 enum GameState {
     on = 0,
     xWins = 1,
     oWins = 2,
     tie = 3,
     none = 4
+}
+
+function makeMove(boardState: ITikTakToeBoardState, move: IMove): ITikTakToeBoardState {
+    const tmpState = cloneBoardState(boardState);
+    tmpState.board[move.i][move.j] = boardState.piece;
+
+    const inc = boardState.piece === 'X' ? 1 : -1;
+    tmpState.rowSum[move.i] += inc;
+    tmpState.colSum[move.j] += inc;
+    if (move.i === move.j) {
+        tmpState.mainDiagSum += inc;
+    }
+    if (Math.abs(tmpState.n - 1 - move.j) === move.i) {
+        tmpState.offDiagSum += inc;
+    }
+    if (Math.abs(tmpState.rowSum[move.i]) === tmpState.n || Math.abs(tmpState.colSum[move.j]) === tmpState.n || Math.abs(tmpState.mainDiagSum) === tmpState.n || Math.abs(tmpState.offDiagSum) === tmpState.n) {
+        tmpState.gameState = tmpState.piece === 'X' ? GameState.xWins : GameState.oWins;
+    }
+
+    var tot = 0;
+    for (let i = 0; i < tmpState.n; i++) {
+        for (let j = 0; j < tmpState.n; j++) {
+            tot += tmpState.board[i][j] !== '' ? 1 : 0;
+        }
+    }
+
+    if (tot === 0 || (tmpState.gameState === GameState.on && !winPossible(tmpState, tmpState.piece === 'X' ? 1 : -1, numMovesLeft(tmpState.board, tmpState.n, 0)) && !winPossible(tmpState, tmpState.piece === 'X' ? -1 : 1, numMovesLeft(tmpState.board, tmpState.n, 1)))) {
+        tmpState.gameState = GameState.tie;
+    }
+
+    tmpState.piece = tmpState.piece === 'X' ? 'O' : 'X';
+    return tmpState;
 }
 
 function numMovesLeft(board: string[][], n: number, offset: number) {
@@ -121,37 +162,7 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
     const [boardState, setBoardState] = useState<ITikTakToeBoardState>(emptyBoardState(n));
 
     function updateBoardState(i: number, j: number) {
-        const tmpBoard: any = [];
-        boardState.board.forEach(row => tmpBoard.push(Object.assign([], row)));
-        tmpBoard[i][j] = boardState.piece;
-
-        const tmpState = cloneBoardState(boardState);
-        tmpState.board = tmpBoard;
-        const inc = boardState.piece === 'X' ? 1 : -1;
-        tmpState.rowSum[i] += inc;
-        tmpState.colSum[j] += inc;
-        if (i === j) {
-            tmpState.mainDiagSum += inc;
-        }
-        if (Math.abs(tmpState.n - 1 - j) === i) {
-            tmpState.offDiagSum += inc;
-        }
-        if (Math.abs(tmpState.rowSum[i]) === tmpState.n || Math.abs(tmpState.colSum[j]) === tmpState.n || Math.abs(tmpState.mainDiagSum) === tmpState.n || Math.abs(tmpState.offDiagSum) === tmpState.n) {
-            tmpState.gameState = tmpState.piece === 'X' ? GameState.xWins : GameState.oWins;
-        }
-
-        var tot = 0;
-        for (let i = 0; i < n; i++) {
-            for (let j = 0; j < n; j++) {
-                tot += tmpBoard[i][j] !== '' ? 1 : 0;
-            }
-        }
-
-        if (tot === 0 || (tmpState.gameState === GameState.on && !winPossible(tmpState, tmpState.piece === 'X' ? 1 : -1, numMovesLeft(tmpBoard, n, 0)) && !winPossible(tmpState, tmpState.piece === 'X' ? -1 : 1, numMovesLeft(tmpBoard, n, 1)))) {
-            tmpState.gameState = GameState.tie;
-        }
-
-        tmpState.piece = tmpState.piece === 'X' ? 'O' : 'X';
+        const tmpState = makeMove(boardState, { i: i, j: j } as IMove);
         setBoardState(tmpState);
     }
 

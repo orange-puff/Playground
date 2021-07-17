@@ -191,9 +191,9 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
         <div className="tiktaktoe">
             <span>
                 <button onClick={handleStartClick}>Start</button>
-                <input type="radio" id="singlePlayer" checked={boardState.singlePlayer} onChange={_ => handleRadioClick(true)} className="radioButton"/>
+                <input type="radio" id="singlePlayer" checked={boardState.singlePlayer} onChange={() => handleRadioClick(true)} className="radioButton"/>
                 <label for="singlePlayer">single player</label>
-                <input type="radio" id="multiPlayer" checked={!boardState.singlePlayer} onChange={_ => handleRadioClick(false)} className="radioButton"/>
+                <input type="radio" id="multiPlayer" checked={!boardState.singlePlayer} onChange={() => handleRadioClick(false)} className="radioButton"/>
                 <label for="multiPlayer">multi player</label>
             </span>
             <p>
@@ -209,17 +209,9 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
             </p>
             {content.map((buttons, i) => <div className="row" key={i}>{buttons.map(button => button)}</div>)}
             <p></p>
-            <Button
-                className="clearButton"
-                variant="contained"
-                color="secondary"
-                startIcon={<ClearAllIcon />}
-                onClick={() => {
-                    setBoardState(emptyBoardState(n));
-                }}
-            >
-                Reset
-            </Button>
+            <button onClick={() => setBoardState(emptyBoardState(n))}>
+                Restart
+            </button>
         </div>
     );
 }

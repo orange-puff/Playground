@@ -192,9 +192,9 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
             <span>
                 <button onClick={handleStartClick}>Start</button>
                 <input type="radio" id="singlePlayer" checked={boardState.singlePlayer} onChange={() => handleRadioClick(true)} className="radioButton"/>
-                <label for="singlePlayer">single player</label>
+                <label htmlFor="singlePlayer">single player</label>
                 <input type="radio" id="multiPlayer" checked={!boardState.singlePlayer} onChange={() => handleRadioClick(false)} className="radioButton"/>
-                <label for="multiPlayer">multi player</label>
+                <label htmlFor="multiPlayer">multi player</label>
             </span>
             <p>
                 {boardState.gameState === GameState.on

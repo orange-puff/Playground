@@ -1,7 +1,7 @@
 ﻿.tiktaktoe {
     width: 400px;
     margin: auto;
-    margin-top: 100px;
+    margin-top: 50px;
 }
 
 .box {
@@ -21,4 +21,8 @@
 
 .row {
     display: table;
+}
+
+.radioButton {
+    margin-left: 10px;
 }

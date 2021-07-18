@@ -25,7 +25,8 @@ interface IMove {
 }
 
 interface IScoreMove extends IMove {
-    score: number
+    score: number,
+    depth: number
 }
 
 enum GameState {
@@ -48,28 +49,28 @@ function AvailableMoves(board: string[][], n: number): IMove[] {
     return toRet;
 }
 
-function AIMoveCore(boardState: ITikTakToeBoardState, move: IMove, maxi: boolean): IScoreMove {
+function AIMoveCore(boardState: ITikTakToeBoardState, move: IMove, maxi: boolean, depth: number): IScoreMove {
     const newBoardState = makeMove(boardState, move);
 
     if (newBoardState.gameState === GameState.xWins) {
-        return { i: move.i, j: move.j, score: maxi ? 1 : -1 };
+        return { i: move.i, j: move.j, score: maxi ? 1 : -1, depth: depth };
     }
     else if (newBoardState.gameState === GameState.oWins) {
-        return { i: move.i, j: move.j, score: maxi ? -1 : 1 };
+        return { i: move.i, j: move.j, score: maxi ? -1 : 1, depth: depth };
     }
     else if (newBoardState.gameState === GameState.tie) {
-        return { i: move.i, j: move.j, score: 0 };
+        return { i: move.i, j: move.j, score: 0, depth: depth };
     }
 
-    let bestMove: IScoreMove = { i: -1, j: -1, score: 0 };
+    let bestMove: IScoreMove = { i: -1, j: -1, score: 0, depth: depth };
     let bestScore = -1;
 
-    const availableMoves: IMove[] = AvailableMoves(boardState.board, boardState.n);
+    const availableMoves: IMove[] = AvailableMoves(newBoardState.board, newBoardState.n);
     availableMoves.forEach(availableMove => {
-        const tmpMove = AIMoveCore(boardState, availableMove, !maxi);
+        const tmpMove = AIMoveCore(newBoardState, availableMove, !maxi, depth+1);
         if (tmpMove.score > bestScore || bestMove.i === -1) {
             bestScore = tmpMove.score;
-            bestMove = { i: tmpMove.i, j: tmpMove.j, score: tmpMove.score } as IScoreMove;
+            bestMove = { i: tmpMove.i, j: tmpMove.j, score: tmpMove.score, depth: tmpMove } as IScoreMove;
         }
     });
 
@@ -81,13 +82,16 @@ function AIMove(boardState: ITikTakToeBoardState): IMove {
     const tmpState = cloneBoardState(boardState);
     let bestMove: IMove = { i: -1, j: -1 };
     let bestScore = -1;
+    let bestDepth = boardState.n * boardState.n;
 
     const availableMoves: IMove[] = AvailableMoves(tmpState.board, tmpState.n);
     availableMoves.forEach(move => {
-        const tmpMove = AIMoveCore(tmpState, move, true);
-        if (tmpMove.score > bestScore || bestMove.i === -1) {
+        const tmpMove = AIMoveCore(tmpState, move, true, 1);
+        console.log(tmpMove);
+        if (tmpMove.score > bestScore || bestMove.i === -1 || (tmpMove.score === bestScore && tmpMove.depth < bestDepth)) {
             bestScore = tmpMove.score;
             bestMove = { i: tmpMove.i, j: tmpMove.j } as IMove;
+            bestDepth = tmpMove.depth;
         }
     });
 
@@ -108,6 +112,7 @@ function unmakeMove(boardState: ITikTakToeBoardState, move: IMove): ITikTakToeBo
     }
 
     boardState.piece = boardState.piece === 'X' ? 'O' : 'X';
+    boardState.gameState = GameState.on;
     return boardState;
 }
 
@@ -236,22 +241,38 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
     const { n } = props;
     const [boardState, setBoardState] = useState<ITikTakToeBoardState>(emptyBoardState(n));
 
-    function updateBoardState(i: number, j: number) {
-        const tmpState = makeMove(boardState, { i: i, j: j } as IMove);
+    function AIMakeMove(state: ITikTakToeBoardState) {
+        const move = AIMove(state);
+        const tmpState = makeMove(state, move);
         setBoardState(tmpState);
     }
 
+    function updateBoardState(i: number, j: number) {
+        const tmpState = makeMove(boardState, { i: i, j: j } as IMove);
+        setBoardState(tmpState);
+        if (boardState.singlePlayer && tmpState.gameState === GameState.on) {
+            AIMakeMove(cloneBoardState(tmpState));
+        }
+    }
+
     function handleClick(i: number, j: number) {
+        /* If this is invalid square or we are not in the game yet */
         if (boardState.board[i][j] !== '' || boardState.gameState !== GameState.on) {
             return;
         }
-
+        /* if this is single player and it is AIs turn */
+        if (boardState.singlePlayer && boardState.piece === 'X') {
+            return;
+        }
         updateBoardState(i, j);
     }
 
     function handleStartClick() {
-        const tmp = cloneBoardState(boardState);
+        let tmp = cloneBoardState(boardState);
         tmp.gameState = GameState.on;
+        if (tmp.singlePlayer) {
+            tmp = makeMove(tmp, { i: 0, j: 0 });
+        }
         setBoardState(tmp);
     }
 

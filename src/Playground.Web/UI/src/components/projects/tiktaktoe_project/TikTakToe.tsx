@@ -70,7 +70,7 @@ function AIMoveCore(boardState: ITikTakToeBoardState, move: IMove, maxi: boolean
         const tmpMove = AIMoveCore(newBoardState, availableMove, !maxi, depth+1);
         if (tmpMove.score > bestScore || bestMove.i === -1) {
             bestScore = tmpMove.score;
-            bestMove = { i: tmpMove.i, j: tmpMove.j, score: tmpMove.score, depth: tmpMove } as IScoreMove;
+            bestMove = { i: tmpMove.i, j: tmpMove.j, score: tmpMove.score, depth: tmpMove.depth } as IScoreMove;
         }
     });
 

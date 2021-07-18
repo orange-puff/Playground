@@ -36,7 +36,7 @@ enum GameState {
     none = 4
 }
 
-function availableMoves(board: string[][], n: number): IMove[] {
+function AvailableMoves(board: string[][], n: number): IMove[] {
     const toRet: IMove[] = [];
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
@@ -64,7 +64,7 @@ function AIMoveCore(boardState: ITikTakToeBoardState, move: IMove, maxi: boolean
     let bestMove: IScoreMove = { i: -1, j: -1, score: 0 };
     let bestScore = -1;
 
-    const availableMoves = availableMoves(boardState.board, boardState.n);
+    const availableMoves: IMove[] = AvailableMoves(boardState.board, boardState.n);
     availableMoves.forEach(availableMove => {
         const tmpMove = AIMoveCore(boardState, availableMove, !maxi);
         if (tmpMove.score > bestScore || bestMove.i === -1) {
@@ -82,7 +82,7 @@ function AIMove(boardState: ITikTakToeBoardState): IMove {
     let bestMove: IMove = { i: -1, j: -1 };
     let bestScore = -1;
 
-    const availableMoves = availableMoves(tmpState.board, tmpState.n);
+    const availableMoves: IMove[] = AvailableMoves(tmpState.board, tmpState.n);
     availableMoves.forEach(move => {
         const tmpMove = AIMoveCore(tmpState, move, true);
         if (tmpMove.score > bestScore || bestMove.i === -1) {

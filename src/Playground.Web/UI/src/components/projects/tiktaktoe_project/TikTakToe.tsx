@@ -52,11 +52,8 @@ function AvailableMoves(board: string[][], n: number): IMove[] {
 function AIMoveCore(boardState: ITikTakToeBoardState, move: IMove, maxi: boolean, depth: number): IScoreMove {
     const newBoardState = makeMove(boardState, move);
 
-    if (newBoardState.gameState === GameState.xWins) {
-        return { i: move.i, j: move.j, score: maxi ? 1 : -1, depth: depth };
-    }
-    else if (newBoardState.gameState === GameState.oWins) {
-        return { i: move.i, j: move.j, score: maxi ? -1 : 1, depth: depth };
+    if (newBoardState.gameState === GameState.xWins || newBoardState.gameState === GameState.oWins) {
+        return { i: move.i, j: move.j, score: 1, depth: depth };
     }
     else if (newBoardState.gameState === GameState.tie) {
         return { i: move.i, j: move.j, score: 0, depth: depth };
@@ -64,13 +61,15 @@ function AIMoveCore(boardState: ITikTakToeBoardState, move: IMove, maxi: boolean
 
     let bestMove: IScoreMove = { i: -1, j: -1, score: 0, depth: depth };
     let bestScore = -1;
+    let bestDepth = boardState.n * boardState.n;
 
     const availableMoves: IMove[] = AvailableMoves(newBoardState.board, newBoardState.n);
     availableMoves.forEach(availableMove => {
-        const tmpMove = AIMoveCore(newBoardState, availableMove, !maxi, depth+1);
-        if (tmpMove.score > bestScore || bestMove.i === -1) {
+        const tmpMove = AIMoveCore(newBoardState, availableMove, !maxi, depth + 1);
+        if (tmpMove.score > bestScore || bestMove.i === -1 || (tmpMove.score === bestScore && tmpMove.depth < bestDepth)) {
             bestScore = tmpMove.score;
             bestMove = { i: tmpMove.i, j: tmpMove.j, score: tmpMove.score, depth: tmpMove.depth } as IScoreMove;
+            bestDepth = tmpMove.depth;
         }
     });
 
@@ -87,7 +86,6 @@ function AIMove(boardState: ITikTakToeBoardState): IMove {
     const availableMoves: IMove[] = AvailableMoves(tmpState.board, tmpState.n);
     availableMoves.forEach(move => {
         const tmpMove = AIMoveCore(tmpState, move, true, 1);
-        console.log(tmpMove);
         if (tmpMove.score > bestScore || bestMove.i === -1 || (tmpMove.score === bestScore && tmpMove.depth < bestDepth)) {
             bestScore = tmpMove.score;
             bestMove = { i: tmpMove.i, j: tmpMove.j } as IMove;
@@ -271,7 +269,9 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
         let tmp = cloneBoardState(boardState);
         tmp.gameState = GameState.on;
         if (tmp.singlePlayer) {
-            tmp = makeMove(tmp, { i: 0, j: 0 });
+            const randomi = Math.floor(Math.random() * tmp.n);
+            const randomj = Math.floor(Math.random() * tmp.n);
+            tmp = makeMove(tmp, { i: randomi, j: randomj });
         }
         setBoardState(tmp);
     }
@@ -296,6 +296,14 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
 
     return (
         <div className="tiktaktoe">
+            <div className="body">
+                <p>
+                    The AI behind this algorithm is simple. Traverse every possible move and find the ones that end
+                    in the highest score possible for the AI.
+                    A score of 1 is received by the AI if the game ends in a win, a score of 0 if the game ends
+                    in a tie, and a score of -1 if the game ends in a loss.
+                </p>
+            </div>
             <span>
                 <button onClick={handleStartClick}>Start</button>
                 <input type="radio" id="singlePlayer" checked={boardState.singlePlayer} onChange={() => handleRadioClick(true)} className="radioButton" />

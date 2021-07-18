@@ -1,7 +1,7 @@
 ﻿.tiktaktoe {
     width: 400px;
     margin: auto;
-    margin-top: 50px;
+    margin-top: 0px;
 }
 
 .box {
@@ -25,4 +25,10 @@
 
 .radioButton {
     margin-left: 10px;
+}
+
+.body {
+    border: 3px solid black;
+    margin-bottom: 20px;
+    padding: 5px;
 }

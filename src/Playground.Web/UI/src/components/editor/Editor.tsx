@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import './Editor.css';
 
 const MAX_LINE_LENGTH = 100;

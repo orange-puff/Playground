@@ -17,9 +17,6 @@ namespace JsonProject
                     JsonTokenType.False,
                     JsonTokenType.Null
                 }
-            },
-            {
-                new JsonState()
             }
         };
     }

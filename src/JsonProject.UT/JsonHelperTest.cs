@@ -146,5 +146,25 @@ namespace JsonProject.UT
                 Assert.True(expected[i].Equals(jsonTokens[i]));
             }
         }
+
+        [Fact]
+        public void try_tokenize_with_trivial_invalid_input()
+        {
+            // setup
+            var input = "asdasdasd";
+            var expectedAns = false;
+            var expected = new List<JsonToken>();
+
+            // execute
+            var output = JsonHelper.TryTokenize(input, out var jsonTokens, out var error);
+
+            // verify
+            Assert.Equal(expectedAns, output);
+            Assert.Equal(expected.Count, jsonTokens.Count);
+            for (int i = 0; i < expected.Count; i++)
+            {
+                Assert.True(expected[i].Equals(jsonTokens[i]));
+            }
+        }
     }
 }

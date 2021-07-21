@@ -1,6 +1,4 @@
-﻿import Button from '@material-ui/core/Button';
-import ClearAllIcon from '@material-ui/icons/ClearAll';
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import './TikTakToe.css';
 
 interface ITikTakToeProps {

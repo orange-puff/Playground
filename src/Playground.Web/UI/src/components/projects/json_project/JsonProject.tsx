@@ -1,10 +1,8 @@
 ﻿import React, { useState } from 'react'
 import Button from '@material-ui/core/Button';
 import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import ClearAllIcon from '@material-ui/icons/ClearAll';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Editor from '../../editor/Editor';
 import './JsonProject.css';
@@ -17,12 +15,6 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center'
     }
 }));
-
-enum InputState {
-    Neutral = 0,
-    Good = 1,
-    Bad = -1
-}
 
 interface IJsonProjectModel {
     json: string;
@@ -51,7 +43,6 @@ const ErrorBox = (props: React.PropsWithChildren<IErrorBoxProps>) => {
 const JsonProject = () => {
     const styles = useStyles();
     const [input, setInput] = useState<string>('');
-    const [inputState, setInputState] = useState<InputState>(InputState.Neutral);
     const [output, setOutput] = useState<string>('');
     const [error, setError] = useState<string>('');
 
@@ -87,7 +78,7 @@ const JsonProject = () => {
                 </Button>
                 <Button
                     variant="contained"
-                    color={inputState === InputState.Neutral ? "default" : (inputState === InputState.Good ? "primary" : "secondary")}
+                    color="default"
                     className={styles.button}
                     startIcon={<DoubleArrowIcon />}
                     onClick={validate}
@@ -99,7 +90,7 @@ const JsonProject = () => {
                 <Editor value={input} setValue={setInput} placeHolder='input' readonly={false} />
                 <Editor value={output} setValue={setOutput} placeHolder='output' readonly={true} />
             </div>
-            {error == '' ? <p></p> : <ErrorBox error={error} />}
+            {error === '' ? <p></p> : <ErrorBox error={error} />}
         </div>
     );
 }

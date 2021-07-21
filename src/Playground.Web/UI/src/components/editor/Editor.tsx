@@ -10,47 +10,56 @@ interface IEditorProps {
     readonly: boolean;
 }
 
-function Editor(props: React.PropsWithChildren<IEditorProps>) {
+const handleChange = (val: string): [string, number, number[]] => {
+    const splitLines = val.split('\n');
+
+    /* if a line has length > MAX_LINE_LENGTH, split it up */
+    for (let i = 0; i < splitLines.length; i++) {
+        if (splitLines[i].length <= MAX_LINE_LENGTH) {
+            continue;
+        }
+        const tmp: Array<string> = [];
+        for (let j = 0; j < Math.ceil(splitLines[i].length / MAX_LINE_LENGTH); j++) {
+            tmp.push(splitLines[i].substring(j * MAX_LINE_LENGTH, (j + 1) * MAX_LINE_LENGTH));
+        }
+        splitLines[i] = tmp[tmp.length - 1];
+        for (let j = tmp.length - 2; j >= 0; j--) {
+            splitLines.splice(i, 0, tmp[j]);
+        }
+    }
+    const numLines = splitLines.length;
+    const tmp = [];
+    for (let i = 0; i < numLines; i++) {
+        tmp.push(i + 1);
+    }
+
+    const value = splitLines.join('\n');
+    return [value, numLines, tmp];
+}
+
+const Editor = (props: React.PropsWithChildren<IEditorProps>) => {
     const { value, setValue, placeHolder, readonly } = props;
     const [numRows, setNumRows] = useState(1);
     const [lineNumbers, setLineNumbers] = useState([1]);
 
     useEffect(() => {
         if (typeof (value) === 'string') {
-            handleChange(value);
+            const [val, nr, ln]: [string, number, number[]] = handleChange(value);
+            setValue(val);
+            setNumRows(nr);
+            setLineNumbers(ln);
         }
-    }, [value]);
-
-    function handleChange(val: string) {
-        const splitLines = val.split('\n');
-
-        /* if a line has length > MAX_LINE_LENGTH, split it up */
-        for (let i = 0; i < splitLines.length; i++) {
-            if (splitLines[i].length <= MAX_LINE_LENGTH) {
-                continue;
-            }
-            const tmp: Array<string> = [];
-            for (let j = 0; j < Math.ceil(splitLines[i].length / MAX_LINE_LENGTH); j++) {
-                tmp.push(splitLines[i].substring(j * MAX_LINE_LENGTH, (j + 1) * MAX_LINE_LENGTH));
-            }
-            splitLines[i] = tmp[tmp.length - 1];
-            for (let j = tmp.length - 2; j >= 0; j--) {
-                splitLines.splice(i, 0, tmp[j]);
-            }
-        }
-        setValue(splitLines.join('\n'))
-        const numLines = splitLines.length;
-        setNumRows(numLines);
-        const tmp = [];
-        for (let i = 0; i < numLines; i++) {
-            tmp.push(i + 1);
-        }
-        setLineNumbers(tmp);
-    }
+    }, [value, setValue, setNumRows, setLineNumbers]);
 
     return (
         <div className="editor">
-            <textarea id="codeArea" placeholder={placeHolder} value={value} onChange={(event) => handleChange(event.target.value)} rows={numRows} cols={MAX_LINE_LENGTH} readOnly={readonly} />
+            <textarea id="codeArea" placeholder={placeHolder} value={value} onChange={(event) => {
+                const [val, nr, ln]: [string, number, number[]] = handleChange(event.target.value);
+                setValue(val);
+                setNumRows(nr);
+                setLineNumbers(ln);
+            }
+            } rows={numRows} cols={MAX_LINE_LENGTH} readOnly={readonly} />
             <div className="lineNumberColumn">
                 {lineNumbers.map(lineNumber => <div className="editorLineNumber" key={lineNumber}>{lineNumber}</div>)}
             </div>

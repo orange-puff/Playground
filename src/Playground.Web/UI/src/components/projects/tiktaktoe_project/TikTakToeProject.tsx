@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import TikTakToe from './TikTakToe';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';

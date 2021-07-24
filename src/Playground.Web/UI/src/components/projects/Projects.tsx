@@ -11,6 +11,7 @@ const Projects = () => {
             <ul>
                 <li><Button to="/projects/json_project" component={Link}>Json Project</Button></li>
                 <li><Button to="/projects/tiktaktoe_project" component={Link}>TikTakToe Project</Button></li>
+                <li><Button to="/projects/typing_project" component={Link}>Typing Project</Button></li>
             </ul>
         </div>
     );

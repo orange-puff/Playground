@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: JSON.stringify(FONT_SIZE) + "px",
         outline: "none",
         float: "left",
-        marginTop: JSON.stringify(Math.floor(BOX_HEIGHT / 2) - FONT_SIZE) + "px"
+        marginTop: JSON.stringify(Math.floor(BOX_HEIGHT / 2) - Math.floor(FONT_SIZE/2)) + "px"
     },
     rightBox: {
         width: JSON.stringify(Math.floor(BOX_WIDTH / 2) - 10) + "px",
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: "10px",
         fontSize: JSON.stringify(FONT_SIZE) + "px",
         fontFamily: "Times New Roman, Times, serif",
-        marginTop: JSON.stringify(Math.floor(BOX_HEIGHT / 2) - FONT_SIZE) + "px",
+        marginTop: JSON.stringify(Math.floor(BOX_HEIGHT / 2) - Math.floor(FONT_SIZE / 2)) + "px",
         float: "left"
     },
     leftWord: {
@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: "10px",
         fontSize: JSON.stringify(FONT_SIZE) + "px",
         fontFamily: "Times New Roman, Times, serif",
-        marginTop: JSON.stringify(Math.floor(BOX_HEIGHT / 2) - FONT_SIZE) + "px",
+        marginTop: JSON.stringify(Math.floor(BOX_HEIGHT / 2) - Math.floor(FONT_SIZE / 2)) + "px",
         float: "right"
     }
 }));

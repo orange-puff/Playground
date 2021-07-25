@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 const BOX_WIDTH = 900;
 const BOX_HEIGHT = 140;
-const MIDDLE_BOX_WIDTH = 5;
+const MIDDLE_BOX_WIDTH = 4;
 const WORDS = ["hello", "how", "are", "you", "bye", "bitch", "bye", "more", "words", "because", "I", "need", "them", "okay", "peace"];
 
 const useStyles = makeStyles((theme) => ({
     box: {
-        border: "3px solid white",
         width: JSON.stringify(BOX_WIDTH) + "px",
         height: JSON.stringify(BOX_HEIGHT) + "px",
         margin: "auto",
@@ -17,20 +16,24 @@ const useStyles = makeStyles((theme) => ({
         color: "black"
     },
     leftBox: {
-        border: "1px solid black",
         width: JSON.stringify(Math.floor(BOX_WIDTH / 2)) + "px",
         height: JSON.stringify(BOX_HEIGHT) + "px",
         float: "left",
     },
     centerBox: {
-        border: "1px solid red",
         width: JSON.stringify(MIDDLE_BOX_WIDTH) + "px",
         height: JSON.stringify(BOX_HEIGHT) + "px",
-        float: "left"
+        float: "right",
+        overflow: "hidden",
+        display: "inline-flex",
+        alignItems: "center",
+        color: "white",
+        caretColor: "black",
+        fontSize: "30px",
+        outline: "none"
     },
     rightBox: {
-        border: "1px solid blue",
-        width: JSON.stringify(Math.floor(BOX_WIDTH / 2) - 3 * MIDDLE_BOX_WIDTH) + "px",
+        width: JSON.stringify(Math.floor(BOX_WIDTH / 2) - 10) + "px",
         height: JSON.stringify(BOX_HEIGHT) + "px",
         float: "left",
         overflow: "hidden"
@@ -48,17 +51,28 @@ const useStyles = makeStyles((theme) => ({
 const TypingProject = () => {
     const [left, setLeft] = useState<string[]>([]);
     const [right, setRight] = useState<string[]>(WORDS);
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        inputRef.current.focus();
+    });
+
+    function handleInput(event: any) {
+        if (event.key === "Tab") {
+            event.preventDefault();
+        }
+    }
 
     const styles = useStyles();
     return (
-        <div className={styles.box}>
+        <div className={styles.box} onClick={() => inputRef.current.focus()}>
             <div className={styles.leftBox}>
-                {left.map(val => <span className={styles.word}>{val}</span>)}
-            </div>
-            <div className={styles.centerBox} contentEditable={true}>
+                {left.map((val, ind) => <span key={ind} className={styles.word}>{val}</span>)}
+                <div className={styles.centerBox} contentEditable={true} onKeyDown={(event) => handleInput(event)} ref={inputRef}>
+                </div>
             </div>
             <div className={styles.rightBox}>
-                {right.map(val => <span className={styles.word}>{val}</span>)}
+                {right.map((val, ind) => <span key={ind} className={styles.word}>{val}</span>)}
             </div>
         </div>
     );

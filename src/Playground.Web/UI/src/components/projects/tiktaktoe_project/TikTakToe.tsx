@@ -264,6 +264,10 @@ const TikTakToe = (props: React.PropsWithChildren<ITikTakToeProps>) => {
     }
 
     function handleStartClick() {
+        if (boardState.gameState !== GameState.none) {
+            return;
+        }
+
         let tmp = cloneBoardState(boardState);
         tmp.gameState = GameState.on;
         if (tmp.singlePlayer) {

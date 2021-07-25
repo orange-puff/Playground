@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-const BOX_WIDTH = 900;
+const BOX_WIDTH = 1024;
 const BOX_HEIGHT = 140;
 const MIDDLE_BOX_WIDTH = 4;
+const FONT_SIZE = 40;
+
 const WORDS = ["hello", "how", "are", "you", "bye", "bitch", "bye", "more", "words", "because", "I", "need", "them", "okay", "peace"];
 const alph = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 const BACKSPACE_KEY_CODE = 8;
@@ -28,14 +30,11 @@ const useStyles = makeStyles((theme) => ({
     centerBox: {
         width: JSON.stringify(MIDDLE_BOX_WIDTH) + "px",
         height: JSON.stringify(BOX_HEIGHT) + "px",
-        overflow: "hidden",
-        display: "inline-flex",
-        alignItems: "center",
-        color: "white",
         caretColor: "black",
-        fontSize: "30px",
+        fontSize: JSON.stringify(FONT_SIZE) + "px",
         outline: "none",
-        float: "left"
+        float: "left",
+        marginTop: JSON.stringify(Math.floor(BOX_HEIGHT / 2) - FONT_SIZE) + "px"
     },
     rightBox: {
         width: JSON.stringify(Math.floor(BOX_WIDTH / 2) - 10) + "px",
@@ -46,18 +45,17 @@ const useStyles = makeStyles((theme) => ({
     word: {
         height: JSON.stringify(BOX_HEIGHT) + "px",
         marginRight: "10px",
-        fontSize: "40px",
+        fontSize: JSON.stringify(FONT_SIZE) + "px",
         fontFamily: "Times New Roman, Times, serif",
-        display: "inline-flex",
-        alignItems: "center"
+        marginTop: JSON.stringify(Math.floor(BOX_HEIGHT / 2) - FONT_SIZE) + "px",
+        float: "left"
     },
     leftWord: {
         height: JSON.stringify(BOX_HEIGHT) + "px",
-        marginRight: "10px",
-        fontSize: "40px",
+        marginLeft: "10px",
+        fontSize: JSON.stringify(FONT_SIZE) + "px",
         fontFamily: "Times New Roman, Times, serif",
-        display: "inline-flex",
-        alignItems: "center",
+        marginTop: JSON.stringify(Math.floor(BOX_HEIGHT / 2) - FONT_SIZE) + "px",
         float: "right"
     }
 }));
@@ -84,7 +82,16 @@ const TypingProject = () => {
                 return;
             }
 
-            head = head.substr(0, tmp.length - 1);
+            const isSub: boolean = curr.indexOf(head) === 0;
+            if (isSub) {
+                const tmpRight: string[] = [];
+                right.forEach(word => tmpRight.push(word));
+
+                tmpRight[0] = head[head.length - 1] + right[0];
+                setRight(tmpRight);
+            }
+
+            head = head.substr(0, head.length - 1);
             tmp[0] = head;
             setLeft(tmp);
         }
@@ -118,6 +125,8 @@ const TypingProject = () => {
                 tmpRight[0] = tmpRight[0].substr(1, tmpRight[0].length);
                 setRight(tmpRight);
             }
+
+            console.log(tmpRight);
         }
     }
 

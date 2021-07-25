@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 const BOX_WIDTH = 900;
 const BOX_HEIGHT = 140;
 const MIDDLE_BOX_WIDTH = 5;
+const WORDS = ["hello", "how", "are", "you", "bye", "bitch", "bye", "more", "words", "because", "I", "need", "them", "okay", "peace"];
 
 const useStyles = makeStyles((theme) => ({
     box: {
@@ -13,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
         margin: "auto",
         marginTop: "50px",
         backgroundColor: "white",
+        color: "black"
     },
     leftBox: {
         border: "1px solid black",
@@ -30,19 +32,33 @@ const useStyles = makeStyles((theme) => ({
         border: "1px solid blue",
         width: JSON.stringify(Math.floor(BOX_WIDTH / 2) - 3 * MIDDLE_BOX_WIDTH) + "px",
         height: JSON.stringify(BOX_HEIGHT) + "px",
-        float: "left"
+        float: "left",
+        overflow: "hidden"
+    },
+    word: {
+        height: JSON.stringify(BOX_HEIGHT) + "px",
+        marginRight: "10px",
+        fontSize: "40px",
+        fontFamily: "Times New Roman, Times, serif",
+        display: "inline-flex",
+        alignItems: "center"
     }
 }));
 
 const TypingProject = () => {
+    const [left, setLeft] = useState<string[]>([]);
+    const [right, setRight] = useState<string[]>(WORDS);
+
     const styles = useStyles();
     return (
         <div className={styles.box}>
             <div className={styles.leftBox}>
+                {left.map(val => <span className={styles.word}>{val}</span>)}
             </div>
-            <div className={styles.centerBox}>
+            <div className={styles.centerBox} contentEditable={true}>
             </div>
             <div className={styles.rightBox}>
+                {right.map(val => <span className={styles.word}>{val}</span>)}
             </div>
         </div>
     );

@@ -15,7 +15,7 @@ const TikTakToeProject = () => {
     return (
         <div>
             <Typography variant="h3" component="h3" gutterBottom className={styles.title}>
-                TikTakToe Project
+                TikTakToe Game with Single Player AI
             </Typography>
             <TikTakToe n={3} />
         </div>

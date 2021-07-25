@@ -64,7 +64,7 @@ const JsonProject = () => {
     return (
         <div>
             <Typography variant="h3" component="h3" gutterBottom className={styles.title}>
-                Json Project
+                Json Formatter and Validator
             </Typography>
             <div>
                 <Button

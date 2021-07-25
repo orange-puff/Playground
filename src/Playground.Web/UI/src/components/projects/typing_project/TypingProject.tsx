@@ -5,6 +5,7 @@ const BOX_WIDTH = 900;
 const BOX_HEIGHT = 140;
 const MIDDLE_BOX_WIDTH = 4;
 const WORDS = ["hello", "how", "are", "you", "bye", "bitch", "bye", "more", "words", "because", "I", "need", "them", "okay", "peace"];
+const alph = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
 const useStyles = makeStyles((theme) => ({
     box: {
@@ -19,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
         width: JSON.stringify(Math.floor(BOX_WIDTH / 2)) + "px",
         height: JSON.stringify(BOX_HEIGHT) + "px",
         float: "left",
+        overflow: "hidden"
     },
     centerBox: {
         width: JSON.stringify(MIDDLE_BOX_WIDTH) + "px",
@@ -49,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TypingProject = () => {
-    const [left, setLeft] = useState<string[]>([]);
+    const [left, setLeft] = useState<string[]>(['']);
     const [right, setRight] = useState<string[]>(WORDS);
     const inputRef = useRef(null);
 
@@ -61,6 +63,24 @@ const TypingProject = () => {
         if (event.key === "Tab") {
             event.preventDefault();
         }
+        else if (event.key === "Backspace") {
+            const tmp: string[] = [];
+            left.forEach(word => tmp.push(word));
+
+            let head: string = tmp[0];
+            if (head.length > 0) {
+                head = head.substr(0, tmp.length - 1);
+            }
+            tmp[0] = head;
+            setLeft(tmp);
+        }
+        else if (event.Key === "Enter" || event.KeyCode === 32) {
+            console.log("FOUND");
+        }
+        else if (alph.includes(event.Key)) {
+
+        }
+        //console.log(event);
     }
 
     const styles = useStyles();

@@ -11,6 +11,8 @@ const alph = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', '
 const BACKSPACE_KEY_CODE = 8;
 const SPACE_KEY_CODE = 32;
 const ENTER_KEY_CODE = 13;
+const GOOD_STYLE = { color: 'blue' };
+const BAD_STYLE = { textDecoration: 'line-through' };
 
 const useStyles = makeStyles((theme) => ({
     box: {
@@ -34,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: JSON.stringify(FONT_SIZE) + "px",
         outline: "none",
         float: "left",
-        marginTop: JSON.stringify(Math.floor(BOX_HEIGHT / 2) - Math.floor(FONT_SIZE/2)) + "px"
+        marginTop: JSON.stringify(Math.floor(BOX_HEIGHT / 2) - Math.floor(FONT_SIZE / 2)) + "px"
     },
     rightBox: {
         width: JSON.stringify(Math.floor(BOX_WIDTH / 2) - 10) + "px",
@@ -62,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
 
 const TypingProject = () => {
     const [left, setLeft] = useState<string[]>(['']);
+    const [leftStyles, setLeftStyles] = useState([GOOD_STYLE]);
     const [right, setRight] = useState<string[]>(WORDS);
     const [curr, setCurr] = useState<string>(WORDS[0]);
     const inputRef = useRef(null);
@@ -82,9 +85,9 @@ const TypingProject = () => {
                 return;
             }
 
-            const isSub: boolean = curr.indexOf(head) === 0;
+            let isSub: boolean = curr.indexOf(head) === 0;
+            const tmpRight: string[] = [];
             if (isSub) {
-                const tmpRight: string[] = [];
                 right.forEach(word => tmpRight.push(word));
 
                 tmpRight[0] = head[head.length - 1] + right[0];
@@ -94,22 +97,38 @@ const TypingProject = () => {
             head = head.substr(0, head.length - 1);
             tmp[0] = head;
             setLeft(tmp);
+
+            isSub = curr.indexOf(head) === 0;
+            const tmpStyles: any[] = [];
+            leftStyles.forEach(style => tmpStyles.push(style));
+            if (isSub) {
+                tmpStyles[0] = GOOD_STYLE;
+            }
+            else {
+                tmpStyles[0] = BAD_STYLE;
+            }
+            setLeftStyles(tmpStyles);
+
         }
         else if (event.keyCode === SPACE_KEY_CODE || event.keyCode === ENTER_KEY_CODE) {
             const tmpLeft: string[] = [];
             left.forEach(word => tmpLeft.push(word));
-
             if (tmpLeft[0].length === 0) {
                 return;
             }
             tmpLeft.splice(0, 0, '');
             setLeft(tmpLeft);
 
+            const tmpStyles: any[] = [];
+            leftStyles.forEach(style => tmpStyles.push(style));
+            tmpStyles.splice(0, 0, GOOD_STYLE);
+            setLeftStyles(tmpStyles);
+
             const tmpRight: string[] = [];
             right.forEach(word => tmpRight.push(word));
             tmpRight.splice(0, 1);
             setRight(tmpRight);
-
+            
             setCurr(tmpRight[0]);
         }
         else if (alph.includes(event.key)) {
@@ -119,14 +138,21 @@ const TypingProject = () => {
             tmpLeft[0] = tmpLeft[0] + event.key;
             setLeft(tmpLeft);
 
-            const tmpRight: string[] = [];
-            right.forEach(word => tmpRight.push(word));
-            if (curr.indexOf(tmpLeft[0]) === 0) {
+            const isSub: boolean = curr.indexOf(tmpLeft[0]) === 0;
+            const tmpStyles: any[] = [];
+            leftStyles.forEach(style => tmpStyles.push(style));
+            if (isSub) {
+                const tmpRight: string[] = [];
+                right.forEach(word => tmpRight.push(word));
                 tmpRight[0] = tmpRight[0].substr(1, tmpRight[0].length);
                 setRight(tmpRight);
-            }
 
-            console.log(tmpRight);
+                tmpStyles[0] = GOOD_STYLE;
+            }
+            else {
+                tmpStyles[0] = BAD_STYLE;
+            }
+            setLeftStyles(tmpStyles);
         }
     }
 
@@ -134,7 +160,7 @@ const TypingProject = () => {
     return (
         <div className={styles.box} onClick={() => inputRef.current.focus()}>
             <div className={styles.leftBox}>
-                {left.map((val, ind) => <span key={ind} className={styles.leftWord}>{val}</span>)}
+                {left.map((val, ind) => <span key={ind} className={styles.leftWord} style={leftStyles[ind]}>{val}</span>)}
             </div>
             <div className={styles.centerBox} contentEditable={true} onKeyDown={(event) => handleInput(event)} ref={inputRef}>
             </div>

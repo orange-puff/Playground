@@ -77,18 +77,29 @@ const TypingProject = () => {
     const [goodWords, setGoodWords] = useState<number>(0);
     const [goodChars, setGoodChars] = useState<number>(0);
     const [started, setStarted] = useState<boolean>(false);
+    const [timeLeft, setTimeLeft] = useState<number>(60);
     const inputRef = useRef(null);
 
     useEffect(() => {
         inputRef.current.focus();
     });
 
+    function handleTime() {
+        if (timeLeft <= 0) {
+            return;
+        }
+        setInterval(() => {
+            setTimeLeft(timeLeft - 1);
+            handleTime();
+        }, 1000);
+    }
+
     function handleInput(event: any) {
         event.preventDefault();
-        if (alph.includes(event.key)) {
+        if (!started && alph.includes(event.key)) {
             setStarted(true);
+            handleTime();
         }
-
 
         if (event.keyCode === BACKSPACE_KEY_CODE) {
             const tmp: string[] = [];
@@ -182,6 +193,7 @@ const TypingProject = () => {
             </Typography>
             <p>Words Per Minute: {goodWords}</p>
             <p>Characters Per Minute: {goodChars}</p>
+            <p>Time Left: {timeLeft}</p>
             <div className={styles.box} onClick={() => inputRef.current.focus()}>
                 <div className={styles.leftBox}>
                     {left.map((val, ind) => <span key={ind} className={styles.leftWord} style={leftStyles[ind]}>{val}</span>)}

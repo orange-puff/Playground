@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 
 const BOX_WIDTH = 1024;
 const BOX_HEIGHT = 140;
@@ -15,10 +16,16 @@ const GOOD_STYLE = { color: 'blue' };
 const BAD_STYLE = { textDecoration: 'line-through' };
 
 const useStyles = makeStyles((theme) => ({
+    body: {
+        margin: "auto",
+        width: "80%"
+    },
+    title: {
+        textAlign: "center"
+    },
     box: {
         width: JSON.stringify(BOX_WIDTH) + "px",
         height: JSON.stringify(BOX_HEIGHT) + "px",
-        margin: "auto",
         marginTop: "50px",
         backgroundColor: "white",
         color: "black"
@@ -67,6 +74,9 @@ const TypingProject = () => {
     const [leftStyles, setLeftStyles] = useState([GOOD_STYLE]);
     const [right, setRight] = useState<string[]>(WORDS);
     const [curr, setCurr] = useState<string>(WORDS[0]);
+    const [goodWords, setGoodWords] = useState<number>(0);
+    const [goodChars, setGoodChars] = useState<number>(0);
+    const [started, setStarted] = useState<boolean>(false);
     const inputRef = useRef(null);
 
     useEffect(() => {
@@ -75,6 +85,10 @@ const TypingProject = () => {
 
     function handleInput(event: any) {
         event.preventDefault();
+        if (alph.includes(event.key)) {
+            setStarted(true);
+        }
+
 
         if (event.keyCode === BACKSPACE_KEY_CODE) {
             const tmp: string[] = [];
@@ -116,6 +130,10 @@ const TypingProject = () => {
             if (tmpLeft[0].length === 0) {
                 return;
             }
+            else if (tmpLeft[0] === curr) {
+                setGoodWords(goodWords + 1);
+                setGoodChars(goodChars + curr.length);
+            }
             tmpLeft.splice(0, 0, '');
             setLeft(tmpLeft);
 
@@ -128,7 +146,7 @@ const TypingProject = () => {
             right.forEach(word => tmpRight.push(word));
             tmpRight.splice(0, 1);
             setRight(tmpRight);
-            
+
             setCurr(tmpRight[0]);
         }
         else if (alph.includes(event.key)) {
@@ -158,14 +176,21 @@ const TypingProject = () => {
 
     const styles = useStyles();
     return (
-        <div className={styles.box} onClick={() => inputRef.current.focus()}>
-            <div className={styles.leftBox}>
-                {left.map((val, ind) => <span key={ind} className={styles.leftWord} style={leftStyles[ind]}>{val}</span>)}
-            </div>
-            <div className={styles.centerBox} contentEditable={true} onKeyDown={(event) => handleInput(event)} ref={inputRef}>
-            </div>
-            <div className={styles.rightBox}>
-                {right.map((val, ind) => <span key={ind} className={styles.word}>{val}</span>)}
+        <div className={styles.body}>
+            <Typography variant="h3" component="h3" gutterBottom className={styles.title}>
+                Test Your Typing Speed
+            </Typography>
+            <p>Words Per Minute: {goodWords}</p>
+            <p>Characters Per Minute: {goodChars}</p>
+            <div className={styles.box} onClick={() => inputRef.current.focus()}>
+                <div className={styles.leftBox}>
+                    {left.map((val, ind) => <span key={ind} className={styles.leftWord} style={leftStyles[ind]}>{val}</span>)}
+                </div>
+                <div className={styles.centerBox} contentEditable={true} onKeyDown={(event) => handleInput(event)} ref={inputRef}>
+                </div>
+                <div className={styles.rightBox}>
+                    {right.map((val, ind) => <span key={ind} className={styles.word}>{val}</span>)}
+                </div>
             </div>
         </div>
     );

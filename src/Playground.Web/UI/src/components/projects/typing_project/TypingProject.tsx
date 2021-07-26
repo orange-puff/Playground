@@ -22,6 +22,8 @@ const useStyles = makeStyles((theme) => ({
         width: "80%"
     },
     title: {
+        marginTop: "20px",
+        marginBottom: "20px",
         textAlign: "center"
     },
     box: {
@@ -70,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     },
     bannerBox: {
         height: JSON.stringify(BANNER_BOX_HEIGHT) + "px",
-        width: "600px",
+        width: "650px",
         margin: "auto"
     },
     bannerEntry: {
@@ -265,6 +267,14 @@ const TypingProject = () => {
                     </div>
                     <div className={styles.bannerEntryBottom}>
                         Words / Min
+                    </div>
+                </div>
+                <div className={styles.bannerEntry} style={{ float: "left" }}>
+                    <div className={styles.bannerEntryTop}>
+                        {timeLeft}
+                    </div>
+                    <div className={styles.bannerEntryBottom}>
+                        Seconds
                     </div>
                 </div>
             </div>

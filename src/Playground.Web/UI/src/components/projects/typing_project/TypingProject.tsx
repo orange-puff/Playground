@@ -84,21 +84,16 @@ const TypingProject = () => {
         inputRef.current.focus();
     });
 
-    function handleTime() {
-        if (timeLeft <= 0) {
-            return;
-        }
-        setInterval(() => {
-            setTimeLeft(timeLeft - 1);
-            handleTime();
-        }, 1000);
-    }
-
     function handleInput(event: any) {
         event.preventDefault();
+        console.log(timeLeft);
         if (!started && alph.includes(event.key)) {
             setStarted(true);
-            handleTime();
+            setInterval(() => {
+                setTimeLeft((oldTimeLeft) => {
+                    return oldTimeLeft - 1;
+                });
+            }, 1000);
         }
 
         if (event.keyCode === BACKSPACE_KEY_CODE) {

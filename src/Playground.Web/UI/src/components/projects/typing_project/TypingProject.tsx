@@ -7,6 +7,7 @@ const BOX_WIDTH = 1024;
 const BOX_HEIGHT = 140;
 const MIDDLE_BOX_WIDTH = 4;
 const FONT_SIZE = 40;
+const BANNER_BOX_HEIGHT = 125;
 
 const alph = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 const BACKSPACE_KEY_CODE = 8;
@@ -66,6 +67,32 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: "Times New Roman, Times, serif",
         marginTop: JSON.stringify(Math.floor(BOX_HEIGHT / 2) - Math.floor(FONT_SIZE / 2)) + "px",
         float: "right"
+    },
+    bannerBox: {
+        height: JSON.stringify(BANNER_BOX_HEIGHT) + "px",
+        width: "600px",
+        margin: "auto"
+    },
+    bannerEntry: {
+        height: JSON.stringify(BANNER_BOX_HEIGHT) + "px",
+        width: "100px",
+        float: "right",
+        marginLeft: "15px"
+    },
+    bannerEntryTop: {
+        height: JSON.stringify(BANNER_BOX_HEIGHT - 20) + "px",
+        width: "100px",
+        border: "1px solid white",
+        fontSize: "40px",
+        textAlign: "center",
+        lineHeight: JSON.stringify(BANNER_BOX_HEIGHT - 20) + "px",
+        borderRadius: "25px"
+    },
+    bannerEntryBottom: {
+        height: JSON.stringify(20) + "px",
+        width: "100px",
+        fontFamily: "Times New Roman, Times, serif",
+        textAlign: "center"
     }
 }));
 
@@ -215,10 +242,32 @@ const TypingProject = () => {
             <Typography variant="h3" component="h3" gutterBottom className={styles.title}>
                 Test Your Typing Speed
             </Typography>
-            <p>Words Per Minute: {goodWords}</p>
-            <p>Characters Per Minute: {goodChars}</p>
-            <p>Time Left: {timeLeft}</p>
-            <p>Accuracy: {accuracy}</p>
+            <div className={styles.bannerBox}>
+                <div className={styles.bannerEntry}>
+                    <div className={styles.bannerEntryTop}>
+                        {accuracy}
+                    </div>
+                    <div className={styles.bannerEntryBottom}>
+                        % Accuracy
+                    </div>
+                </div>
+                <div className={styles.bannerEntry}>
+                    <div className={styles.bannerEntryTop}>
+                        {goodChars}
+                    </div>
+                    <div className={styles.bannerEntryBottom}>
+                        Chars / Min
+                    </div>
+                </div>
+                <div className={styles.bannerEntry}>
+                    <div className={styles.bannerEntryTop}>
+                        {goodWords}
+                    </div>
+                    <div className={styles.bannerEntryBottom}>
+                        Words / Min
+                    </div>
+                </div>
+            </div>
             <div className={styles.box} onClick={() => inputRef.current.focus()}>
                 <div className={styles.leftBox}>
                     {left.map((val, ind) => <span key={ind} className={styles.leftWord} style={leftStyles[ind]}>{val}</span>)}

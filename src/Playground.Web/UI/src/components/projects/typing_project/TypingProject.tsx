@@ -86,97 +86,85 @@ const TypingProject = () => {
 
     function handleInput(event: any) {
         event.preventDefault();
-        console.log(timeLeft);
         if (!started && alph.includes(event.key)) {
             setStarted(true);
             setInterval(() => {
+                console.log(timeLeft);
                 setTimeLeft((oldTimeLeft) => {
                     return oldTimeLeft - 1;
                 });
             }, 1000);
         }
 
-        if (event.keyCode === BACKSPACE_KEY_CODE) {
-            const tmp: string[] = [];
-            left.forEach(word => tmp.push(word));
+        if (event.keyCode !== BACKSPACE_KEY_CODE && event.keyCode !== SPACE_KEY_CODE && event.keyCode !== ENTER_KEY_CODE && !alph.includes(event.key)) {
+            return;
+        }
 
-            let head: string = tmp[0];
+        const tmpLeft: string[] = [];
+        left.forEach(word => tmpLeft.push(word));
+        const tmpRight: string[] = [];
+        right.forEach(word => tmpRight.push(word));
+        const tmpStyles: any[] = [];
+        leftStyles.forEach(style => tmpStyles.push(style));
+        let tmpGoodWords = goodWords;
+        let tmpGoodChars = goodChars;
+        let tmpCurr = curr;
+        let isSub: boolean = false;
+
+        let head: string = tmpLeft[0];
+
+        if (event.keyCode === BACKSPACE_KEY_CODE) {
             if (head.length === 0) {
                 return;
             }
 
-            let isSub: boolean = curr.indexOf(head) === 0;
-            const tmpRight: string[] = [];
-            if (isSub) {
-                right.forEach(word => tmpRight.push(word));
-
+            if (curr.indexOf(tmpLeft[0]) === 0) {
                 tmpRight[0] = head[head.length - 1] + right[0];
-                setRight(tmpRight);
             }
 
             head = head.substr(0, head.length - 1);
-            tmp[0] = head;
-            setLeft(tmp);
+            tmpLeft[0] = head;
 
             isSub = curr.indexOf(head) === 0;
-            const tmpStyles: any[] = [];
-            leftStyles.forEach(style => tmpStyles.push(style));
-            if (isSub) {
-                tmpStyles[0] = GOOD_STYLE;
-            }
-            else {
-                tmpStyles[0] = BAD_STYLE;
-            }
-            setLeftStyles(tmpStyles);
-
         }
         else if (event.keyCode === SPACE_KEY_CODE || event.keyCode === ENTER_KEY_CODE) {
-            const tmpLeft: string[] = [];
-            left.forEach(word => tmpLeft.push(word));
             if (tmpLeft[0].length === 0) {
                 return;
             }
             else if (tmpLeft[0] === curr) {
-                setGoodWords(goodWords + 1);
-                setGoodChars(goodChars + curr.length);
+                tmpGoodWords += 1;
+                tmpGoodChars += curr.length;
             }
+
             tmpLeft.splice(0, 0, '');
-            setLeft(tmpLeft);
-
-            const tmpStyles: any[] = [];
-            leftStyles.forEach(style => tmpStyles.push(style));
             tmpStyles.splice(0, 0, GOOD_STYLE);
-            setLeftStyles(tmpStyles);
-
-            const tmpRight: string[] = [];
-            right.forEach(word => tmpRight.push(word));
             tmpRight.splice(0, 1);
-            setRight(tmpRight);
-
-            setCurr(tmpRight[0]);
+            tmpCurr = tmpRight[0];
         }
         else if (alph.includes(event.key)) {
-            const tmpLeft: string[] = [];
-            left.forEach(word => tmpLeft.push(word));
-
             tmpLeft[0] = tmpLeft[0] + event.key;
-            setLeft(tmpLeft);
 
-            const isSub: boolean = curr.indexOf(tmpLeft[0]) === 0;
-            const tmpStyles: any[] = [];
-            leftStyles.forEach(style => tmpStyles.push(style));
+            isSub = curr.indexOf(tmpLeft[0]) === 0;
             if (isSub) {
-                const tmpRight: string[] = [];
-                right.forEach(word => tmpRight.push(word));
                 tmpRight[0] = tmpRight[0].substr(1, tmpRight[0].length);
                 setRight(tmpRight);
+            }
+        }
 
-                tmpStyles[0] = GOOD_STYLE;
-            }
-            else {
-                tmpStyles[0] = BAD_STYLE;
-            }
+        if (isSub) {
+            tmpStyles[0] = GOOD_STYLE;
+        }
+        else {
+            tmpStyles[0] = BAD_STYLE;
+        }
+
+        if (timeLeft > 0) {
+            setLeft(tmpLeft);
+            setRight(tmpRight);
             setLeftStyles(tmpStyles);
+            setCurr(tmpCurr);
+            setGoodWords(tmpGoodWords);
+            setGoodChars(tmpGoodChars);
         }
     }
 

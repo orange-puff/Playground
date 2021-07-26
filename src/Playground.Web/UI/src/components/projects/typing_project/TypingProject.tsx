@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import WORDS from './words';
 
 const BOX_WIDTH = 1024;
 const BOX_HEIGHT = 140;
 const MIDDLE_BOX_WIDTH = 4;
 const FONT_SIZE = 40;
 
-const WORDS = ["hello", "how", "are", "you", "bye", "bitch", "bye", "more", "words", "because", "I", "need", "them", "okay", "peace"];
 const alph = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 const BACKSPACE_KEY_CODE = 8;
 const SPACE_KEY_CODE = 32;
@@ -72,31 +72,62 @@ const useStyles = makeStyles((theme) => ({
 const TypingProject = () => {
     const [left, setLeft] = useState<string[]>(['']);
     const [leftStyles, setLeftStyles] = useState([GOOD_STYLE]);
-    const [right, setRight] = useState<string[]>(WORDS);
-    const [curr, setCurr] = useState<string>(WORDS[0]);
+    const wordsSub: string[] = getWordsSub();
+    const [right, setRight] = useState<string[]>(wordsSub);
+    const [curr, setCurr] = useState<string>(wordsSub[0]);
     const [goodWords, setGoodWords] = useState<number>(0);
     const [goodChars, setGoodChars] = useState<number>(0);
+    const [accuracy, setAccuracy] = useState<number>(100.0);
+    const [totalWords, setTotalWords] = useState<number>(0);
     const [started, setStarted] = useState<boolean>(false);
     const [timeLeft, setTimeLeft] = useState<number>(60);
     const inputRef = useRef(null);
+    const [timeInterval, setTimeInterval] = useState<any>(null);
 
     useEffect(() => {
         inputRef.current.focus();
-    });
+        if (timeLeft <= 0) {
+            clearInterval(timeInterval);
+            reset();
+        }
+    }, [timeLeft]);
+
+    function getWordsSub() {
+        const tmp: string[] = [];
+        for (let i = 0; i < 100; i++) {
+            tmp.push(WORDS[i]);
+        }
+        return tmp;
+    }
+
+    function reset() {
+        setLeft(['']);
+        setLeftStyles([GOOD_STYLE]);
+        const wordsSub: string[] = getWordsSub();
+        setRight(wordsSub);
+        setCurr(wordsSub[0]);
+        setGoodWords(0);
+        setGoodChars(0);
+        setAccuracy(100.0);
+        setTotalWords(0);
+        setStarted(false);
+        setTimeLeft(60);
+        setTimeInterval(null);
+    }
 
     function handleInput(event: any) {
         event.preventDefault();
         if (!started && alph.includes(event.key)) {
             setStarted(true);
-            setInterval(() => {
-                console.log(timeLeft);
+            const t = setInterval(() => {
                 setTimeLeft((oldTimeLeft) => {
                     return oldTimeLeft - 1;
                 });
             }, 1000);
+            setTimeInterval(t);
         }
 
-        if (event.keyCode !== BACKSPACE_KEY_CODE && event.keyCode !== SPACE_KEY_CODE && event.keyCode !== ENTER_KEY_CODE && !alph.includes(event.key)) {
+        if ((event.keyCode !== BACKSPACE_KEY_CODE && event.keyCode !== SPACE_KEY_CODE && event.keyCode !== ENTER_KEY_CODE && !alph.includes(event.key)) || timeLeft <= 0) {
             return;
         }
 
@@ -108,6 +139,8 @@ const TypingProject = () => {
         leftStyles.forEach(style => tmpStyles.push(style));
         let tmpGoodWords = goodWords;
         let tmpGoodChars = goodChars;
+        let tmpAccuracy = accuracy;
+        let tmpTotalWords = totalWords;
         let tmpCurr = curr;
         let isSub: boolean = false;
 
@@ -131,10 +164,15 @@ const TypingProject = () => {
             if (tmpLeft[0].length === 0) {
                 return;
             }
-            else if (tmpLeft[0] === curr) {
+            tmpTotalWords += 1;
+            if (tmpLeft[0] === curr) {
                 tmpGoodWords += 1;
                 tmpGoodChars += curr.length;
             }
+            else {
+                tmpStyles[0] = BAD_STYLE;
+            }
+            tmpAccuracy = (tmpGoodWords / tmpTotalWords).toFixed(2) * 100;
 
             tmpLeft.splice(0, 0, '');
             tmpStyles.splice(0, 0, GOOD_STYLE);
@@ -142,7 +180,8 @@ const TypingProject = () => {
             tmpCurr = tmpRight[0];
         }
         else if (alph.includes(event.key)) {
-            tmpLeft[0] = tmpLeft[0] + event.key;
+            head = head + event.key;
+            tmpLeft[0] = head;
 
             isSub = curr.indexOf(tmpLeft[0]) === 0;
             if (isSub) {
@@ -165,6 +204,8 @@ const TypingProject = () => {
             setCurr(tmpCurr);
             setGoodWords(tmpGoodWords);
             setGoodChars(tmpGoodChars);
+            setAccuracy(tmpAccuracy);
+            setTotalWords(tmpTotalWords);
         }
     }
 
@@ -177,6 +218,7 @@ const TypingProject = () => {
             <p>Words Per Minute: {goodWords}</p>
             <p>Characters Per Minute: {goodChars}</p>
             <p>Time Left: {timeLeft}</p>
+            <p>Accuracy: {accuracy}</p>
             <div className={styles.box} onClick={() => inputRef.current.focus()}>
                 <div className={styles.leftBox}>
                     {left.map((val, ind) => <span key={ind} className={styles.leftWord} style={leftStyles[ind]}>{val}</span>)}

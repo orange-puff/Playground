@@ -99,10 +99,21 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const getRandomWords = (n: number) => {
+    const s: Set<number> = new Set();
+    while (s.size != n) {
+        s.add(Math.floor((Math.random() * WORDS.length)));
+    }
+
+    const toRet: string[] = [];
+    s.forEach(ind => toRet.push(WORDS[ind]));
+    return toRet;
+}
+
 const TypingProject = () => {
     const [left, setLeft] = useState<string[]>(['']);
     const [leftStyles, setLeftStyles] = useState([GOOD_STYLE]);
-    const wordsSub: string[] = getWordsSub();
+    const wordsSub: string[] = getRandomWords(300);
     const [right, setRight] = useState<string[]>(wordsSub);
     const [curr, setCurr] = useState<string>(wordsSub[0]);
     const [goodWords, setGoodWords] = useState<number>(0);
@@ -122,18 +133,10 @@ const TypingProject = () => {
         }
     }, [timeLeft]);
 
-    function getWordsSub() {
-        const tmp: string[] = [];
-        for (let i = 0; i < 100; i++) {
-            tmp.push(WORDS[i]);
-        }
-        return tmp;
-    }
-
     function reset() {
         setLeft(['']);
         setLeftStyles([GOOD_STYLE]);
-        const wordsSub: string[] = getWordsSub();
+        const wordsSub: string[] = getRandomWords(300);
         setRight(wordsSub);
         setCurr(wordsSub[0]);
         setGoodWords(0);

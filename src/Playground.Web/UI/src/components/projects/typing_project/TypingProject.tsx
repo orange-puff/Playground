@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
         width: JSON.stringify(BOX_WIDTH) + "px",
         height: JSON.stringify(BOX_HEIGHT) + "px",
         marginTop: "50px",
+        margin: "auto",
         backgroundColor: "white",
         color: "black"
     },
@@ -201,7 +202,7 @@ const TypingProject = () => {
             else {
                 tmpStyles[0] = BAD_STYLE;
             }
-            tmpAccuracy = (tmpGoodWords / tmpTotalWords).toFixed(2) * 100;
+            tmpAccuracy = ((tmpGoodWords * 100) / tmpTotalWords).toFixed(0);
 
             tmpLeft.splice(0, 0, '');
             tmpStyles.splice(0, 0, GOOD_STYLE);
@@ -270,7 +271,7 @@ const TypingProject = () => {
                     </div>
                 </div>
                 <div className={styles.bannerEntry} style={{ float: "left" }}>
-                    <div className={styles.bannerEntryTop}>
+                    <div className={styles.bannerEntryTop} style={{ color: "red" }}>
                         {timeLeft}
                     </div>
                     <div className={styles.bannerEntryBottom}>

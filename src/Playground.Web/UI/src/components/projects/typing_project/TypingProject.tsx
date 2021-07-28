@@ -135,10 +135,10 @@ const TypingProject = () => {
     const [accuracy, setAccuracy] = useState<number>(100.0);
     const [totalWords, setTotalWords] = useState<number>(0);
     const [started, setStarted] = useState<boolean>(false);
-    const [timeLeft, setTimeLeft] = useState<number>(3);
+    const [timeLeft, setTimeLeft] = useState<number>(60);
     const inputRef = useRef(null);
     const [timeInterval, setTimeInterval] = useState<any>(null);
-    const [modalOpen, setModalOpen] = useState<boolean>(true);
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
 
     useEffect(() => {
         inputRef.current.focus();

@@ -114,6 +114,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const getRandomWords = (n: number) => {
+    /* WORDS is sorted in order of word length so we want 30% from first quarter, 30%
+     * from second quarter, 30% from third quarter, 10% from final quarter */
     const s: Set<number> = new Set();
     while (s.size !== n) {
         s.add(Math.floor((Math.random() * WORDS.length)));

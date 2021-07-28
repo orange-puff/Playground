@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Modal from '@material-ui/core/Modal';
 import WORDS from './words';
 
 const BOX_WIDTH = 1024;
@@ -96,12 +97,25 @@ const useStyles = makeStyles((theme) => ({
         width: "100px",
         fontFamily: "Times New Roman, Times, serif",
         textAlign: "center"
+    },
+    modal: {
+        color: "black",
+        position: "fixed",
+        border: "1px solid #ccc",
+        background: "#fff",
+        overflow: "auto",
+        borderRadius: "4px",
+        outline: "none",
+        padding: "20px",
+        height: "20%",
+        width: "20%",
+        margin: "auto"
     }
 }));
 
 const getRandomWords = (n: number) => {
     const s: Set<number> = new Set();
-    while (s.size != n) {
+    while (s.size !== n) {
         s.add(Math.floor((Math.random() * WORDS.length)));
     }
 
@@ -121,17 +135,18 @@ const TypingProject = () => {
     const [accuracy, setAccuracy] = useState<number>(100.0);
     const [totalWords, setTotalWords] = useState<number>(0);
     const [started, setStarted] = useState<boolean>(false);
-    const [timeLeft, setTimeLeft] = useState<number>(60);
+    const [timeLeft, setTimeLeft] = useState<number>(3);
     const inputRef = useRef(null);
     const [timeInterval, setTimeInterval] = useState<any>(null);
+    const [modalOpen, setModalOpen] = useState<boolean>(true);
 
     useEffect(() => {
         inputRef.current.focus();
         if (timeLeft <= 0) {
             clearInterval(timeInterval);
-            reset();
+            setModalOpen(true);
         }
-    }, [timeLeft]);
+    }, [timeLeft, timeInterval]);
 
     function reset() {
         setLeft(['']);
@@ -292,6 +307,17 @@ const TypingProject = () => {
                     {right.map((val, ind) => <span key={ind} className={styles.word}>{val}</span>)}
                 </div>
             </div>
+
+            <Modal
+                open={modalOpen}
+                onClose={() => {
+                    setModalOpen(false);
+                    reset();
+                }}
+                className={styles.modal}
+            >
+                <p>Words / minute: {goodWords} Accuracy: {accuracy}</p>
+            </Modal>
         </div>
     );
 }

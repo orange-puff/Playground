@@ -17,6 +17,8 @@ const ENTER_KEY_CODE = 13;
 const GOOD_STYLE = { color: 'blue' };
 const BAD_STYLE = { textDecoration: 'line-through' };
 
+const PERCENTAGES = [.1, .4, .4, .1];
+
 const useStyles = makeStyles((theme) => ({
     body: {
         margin: "auto",
@@ -114,24 +116,33 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const getRandomWords = (n: number) => {
-    /* WORDS is sorted in order of word length so we want 30% from first quarter, 30%
-     * from second quarter, 30% from third quarter, 10% from final quarter */
     const s: Set<number> = new Set();
-    while (s.size !== n) {
-        s.add(Math.floor((Math.random() * WORDS.length)));
+    const quarter = Math.floor(WORDS.length / 4);
+
+    for (let i: number = 0; i < PERCENTAGES.length; i++) {
+        let count: number = 0;
+        let size: number = n * PERCENTAGES[i];
+        while (count < size) {
+            const r = Math.floor(quarter * (Math.random() + i));
+            if (r in s) {
+                continue;
+            }
+            s.add(r);
+            count++;
+        }
     }
 
     const toRet: string[] = [];
     s.forEach(ind => toRet.push(WORDS[ind]));
+    console.log(toRet[toRet.length - 1]);
     return toRet;
 }
 
 const TypingProject = () => {
     const [left, setLeft] = useState<string[]>(['']);
     const [leftStyles, setLeftStyles] = useState([GOOD_STYLE]);
-    const wordsSub: string[] = getRandomWords(300);
-    const [right, setRight] = useState<string[]>(wordsSub);
-    const [curr, setCurr] = useState<string>(wordsSub[0]);
+    const [right, setRight] = useState<string[]>(getRandomWords(200));
+    const [curr, setCurr] = useState<string>(right[0]);
     const [goodWords, setGoodWords] = useState<number>(0);
     const [goodChars, setGoodChars] = useState<number>(0);
     const [accuracy, setAccuracy] = useState<number>(100.0);
@@ -153,7 +164,7 @@ const TypingProject = () => {
     function reset() {
         setLeft(['']);
         setLeftStyles([GOOD_STYLE]);
-        const wordsSub: string[] = getRandomWords(300);
+        const wordsSub: string[] = getRandomWords(200);
         setRight(wordsSub);
         setCurr(wordsSub[0]);
         setGoodWords(0);

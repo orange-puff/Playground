@@ -134,7 +134,6 @@ const getRandomWords = (n: number) => {
 
     const toRet: string[] = [];
     s.forEach(ind => toRet.push(WORDS[ind]));
-    console.log(toRet[toRet.length - 1]);
     return toRet;
 }
 

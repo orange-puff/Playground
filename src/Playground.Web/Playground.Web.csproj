@@ -44,6 +44,7 @@
         <Folder Include="Models\JsonProjectModels\" />
         <Folder Include="UI\src\components\projects\tiktaktoe_project\" />
         <Folder Include="UI\src\components\projects\typing_project\" />
+        <Folder Include="UI\src\components\projects\digit_project\" />
     </ItemGroup>
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
         <!-- Ensure Node.js is installed -->

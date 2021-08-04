@@ -33,5 +33,5 @@ RUN dotnet restore src/Playground.Web
 RUN dotnet publish -c Release -o out src/Playground.Web
 
 RUN ls
-COPY out .
+COPY /out .
 CMD dotnet Playground.Web.dll

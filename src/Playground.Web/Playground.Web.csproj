@@ -27,6 +27,36 @@
         <ProjectReference Include="..\JsonProject\JsonProject.csproj" />
     </ItemGroup>
     <ItemGroup>
+      <None Remove="UI\build\favicon.ico" />
+      <None Remove="UI\build\logo512.png" />
+      <None Remove="UI\build\robots.txt" />
+      <None Remove="UI\build\logo192.png" />
+      <None Remove="UI\build\favicon.ico" />
+      <None Remove="UI\build\logo512.png" />
+      <None Remove="UI\build\manifest.json" />
+      <None Remove="UI\build\robots.txt" />
+      <None Remove="UI\build\logo192.png" />
+      <None Remove="UI\build\favicon.ico" />
+      <None Remove="UI\build\index.html" />
+      <None Remove="UI\build\logo512.png" />
+      <None Remove="UI\build\asset-manifest.json" />
+      <None Remove="UI\build\manifest.json" />
+      <None Remove="UI\build\robots.txt" />
+      <None Remove="UI\build\logo192.png" />
+      <None Remove="UI\build\static\css\main.9365ab4b.chunk.css.map" />
+      <None Remove="UI\build\static\css\main.9365ab4b.chunk.css" />
+      <None Remove="UI\build\static\js\3.21ce9f73.chunk.js.map" />
+      <None Remove="UI\build\static\js\2.cc99c37a.chunk.js" />
+      <None Remove="UI\build\static\js\main.940b0532.chunk.js" />
+      <None Remove="UI\build\static\js\2.cc99c37a.chunk.js.map" />
+      <None Remove="UI\build\static\js\runtime-main.69d4d808.js" />
+      <None Remove="UI\build\static\js\runtime-main.69d4d808.js.map" />
+      <None Remove="UI\build\static\js\main.940b0532.chunk.js.map" />
+      <None Remove="UI\build\static\js\2.cc99c37a.chunk.js.LICENSE.txt" />
+      <None Remove="UI\build\static\js\3.21ce9f73.chunk.js" />
+      <None Remove="UI\build\static\media\logo.6ce24c58.svg" />
+    </ItemGroup>
+    <ItemGroup>
         <!-- Don't publish the SPA source files, but do show them in the project files list -->
         <Content Remove="$(SpaRoot)**" />
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />

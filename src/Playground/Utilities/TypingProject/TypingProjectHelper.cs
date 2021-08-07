@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -7,11 +8,11 @@ namespace Playground.Utilities.TypingProject
 {
     public static class TypingProjectHelper
     {
-        private static readonly string _fileName = "./data.json";
+        private static readonly string _filePath = "../Playground/Utilities/TypingProject/data.json";
 
         public static async Task<Dictionary<int, int>> ReadData()
         {
-            var contents = await File.ReadAllTextAsync(_fileName);
+            var contents = await File.ReadAllTextAsync(_filePath);
             return JsonConvert.DeserializeObject<Dictionary<int, int>>(contents);
         }
 
@@ -31,7 +32,7 @@ namespace Playground.Utilities.TypingProject
                 data[wordsPerMinute]++;
             }
 
-            await File.WriteAllTextAsync(_fileName, JsonConvert.SerializeObject(data));
+            await File.WriteAllTextAsync(_filePath, JsonConvert.SerializeObject(data));
             return data;
         }
     }

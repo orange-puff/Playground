@@ -147,8 +147,8 @@ const getRandomWords = (n: number) => {
 const TypingProject = () => {
     const [left, setLeft] = useState<string[]>(['']);
     const [leftStyles, setLeftStyles] = useState([GOOD_STYLE]);
-    const [right, setRight] = useState<string[]>(getRandomWords(200));
-    const [curr, setCurr] = useState<string>(right[0]);
+    const [right, setRight] = useState<string[]>([]);
+    const [curr, setCurr] = useState<string>('');
     const [goodWords, setGoodWords] = useState<number>(0);
     const [goodChars, setGoodChars] = useState<number>(0);
     const [accuracy, setAccuracy] = useState<number>(100.0);
@@ -165,24 +165,46 @@ const TypingProject = () => {
         if (timeLeft <= 0) {
             clearInterval(timeInterval);
             setModalOpen(true);
+            const requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(goodWords)
+            };
+            fetch('/api/projects/typing_project', requestOptions)
+                .then(res => res.json())
+                .then(data => {
+                    const arr: any = [['Words / Minute', 'Total']];
+                    for (const key in data) {
+                        arr.push([key, data[key]]);
+                    }
+                    setChartData(arr);
+                })
+                .catch(err => console.log(err));
         }
 
-        const requestOptions = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
-        };
-        fetch('/api/projects/typing_project', requestOptions)
-            .then(res => res.json())
-            .then(data => {
-                const arr: any = [['Words / Minute', 'Total']];
-                for (const key in arr) {
-                    arr.push([key, arr[key]]);
-                }
-                setChartData(arr);
-            })
-            .catch(err => console.log(err));
+        if (!started) {
+            const requestOptions = {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            };
+            fetch('/api/projects/typing_project', requestOptions)
+                .then(res => res.json())
+                .then(data => {
+                    const arr: any = [['Words / Minute', 'Total']];
+                    for (const key in data) {
+                        arr.push([key, data[key]]);
+                    }
+                    setChartData(arr);
+                })
+                .catch(err => console.log(err));
+        }
 
-    }, [timeLeft, timeInterval]);
+        if (!started) {
+            const words = getRandomWords(200);
+            setRight(words);
+            setCurr(words[0]);
+        }
+    }, [timeLeft, timeInterval, started]);
 
     function reset() {
         setLeft(['']);

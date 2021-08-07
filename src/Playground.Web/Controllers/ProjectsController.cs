@@ -11,15 +11,12 @@ namespace Playground.Web.Controllers
     public class ProjectsController : ApiController
     {
         private readonly ILogger<ProjectsController> _logger;
-        private readonly PlaygroundDbContext _playgroundDbContext;
 
         public ProjectsController(
-            ILogger<ProjectsController> logger,
-            PlaygroundDbContext playgroundDbContext
+            ILogger<ProjectsController> logger
             )
         {
             _logger = logger;
-            _playgroundDbContext = playgroundDbContext;
         }
 
         [HttpPost("[controller]/json_project")]
@@ -49,8 +46,9 @@ namespace Playground.Web.Controllers
         }
 
         [HttpPost("[controller]/typing_project")]
-        public async Task<IActionResult> TypingProject(int wordsPerMinute)
+        public async Task<IActionResult> TypingProject([FromBody] int wordsPerMinute)
         {
+            _logger.LogInformation($"Adding new entry for TypingProject: {wordsPerMinute}");
             var data = await TypingProjectHelper.AddEntry(wordsPerMinute);
             return Ok(data);
         }

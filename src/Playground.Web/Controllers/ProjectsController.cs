@@ -2,7 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Playground.EF;
 using Playground.Web.Models.JsonProjectModels;
+using Playground.Utilities.TypingProject;
 using JsonProject;
+using System.Threading.Tasks;
 
 namespace Playground.Web.Controllers
 {
@@ -37,6 +39,20 @@ namespace Playground.Web.Controllers
                     Error = result
                 });
             }
+        }
+
+        [HttpGet("[controller]/typing_project")]
+        public async Task<IActionResult> TypingProject()
+        {
+            var data = await TypingProjectHelper.ReadData();
+            return Ok(data);
+        }
+
+        [HttpPost("[controller]/typing_project")]
+        public async Task<IActionResult> TypingProject(int wordsPerMinute)
+        {
+            var data = await TypingProjectHelper.AddEntry(wordsPerMinute);
+            return Ok(data);
         }
     }
 }

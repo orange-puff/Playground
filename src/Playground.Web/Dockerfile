@@ -34,4 +34,4 @@ RUN dotnet publish -c Release -o out src/Playground.Web
 
 RUN ls
 COPY /out .
-CMD dotnet Playground.Web.dll
+CMD dotnet Playground.Web.dll  

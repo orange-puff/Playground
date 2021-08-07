@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
+import { Chart } from "react-google-charts";
 import WORDS from './words';
 
 const BOX_WIDTH = 1024;
@@ -112,6 +113,12 @@ const useStyles = makeStyles((theme) => ({
         height: "20%",
         width: "20%",
         margin: "auto"
+    },
+    chart: {
+        marginTop: '100px',
+        margin: "auto",
+        width: JSON.stringify(BOX_WIDTH) + "px",
+        height: "300px"
     }
 }));
 
@@ -151,6 +158,7 @@ const TypingProject = () => {
     const inputRef = useRef(null);
     const [timeInterval, setTimeInterval] = useState<any>(null);
     const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const [chartData, setChartData] = useState([]);
 
     useEffect(() => {
         inputRef.current.focus();
@@ -158,6 +166,22 @@ const TypingProject = () => {
             clearInterval(timeInterval);
             setModalOpen(true);
         }
+
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        };
+        fetch('/api/projects/typing_project', requestOptions)
+            .then(res => res.json())
+            .then(data => {
+                const arr: any = [['Words / Minute', 'Total']];
+                for (const key in arr) {
+                    arr.push([key, arr[key]]);
+                }
+                setChartData(arr);
+            })
+            .catch(err => console.log(err));
+
     }, [timeLeft, timeInterval]);
 
     function reset() {
@@ -330,6 +354,23 @@ const TypingProject = () => {
             >
                 <p>Words / minute: {goodWords} Accuracy: {accuracy}</p>
             </Modal>
+
+            <Chart
+                className={styles.chart}
+                chartType="Bar"
+                loader={<div>Loading Chart</div>}
+                data={chartData}
+                options={{
+                    title: 'Word / Minute Frequency',
+                    hAxis: {
+                        title: 'Words / Minute',
+                        minValue: 0,
+                    },
+                    vAxis: {
+                        title: 'Frequency',
+                    },
+                }}
+            />
         </div>
     );
 }

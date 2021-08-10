@@ -8,31 +8,22 @@ namespace Playground.Utilities.TypingProject
 {
     public static class TypingProjectHelper
     {
-        private static readonly string _filePath = "../Playground/Utilities/TypingProject/data.json";
-
-        public static async Task<Dictionary<int, int>> ReadData()
+        public static Dictionary<int, int> AddEntry(Dictionary<int, int> data, int wordsPerMinute, out int key)
         {
-            var contents = await File.ReadAllTextAsync(_filePath);
-            return JsonConvert.DeserializeObject<Dictionary<int, int>>(contents);
-        }
-
-        public static async Task<Dictionary<int, int>> AddEntry(int wordsPerMinute)
-        {
-            var data = await ReadData();
             if (wordsPerMinute <= data.Keys.Min())
             {
-                data[data.Keys.Min()]++;
+                key = data.Keys.Min();
             }
             else if (wordsPerMinute >= data.Keys.Max())
             {
-                data[data.Keys.Max()]++;
+                key = data.Keys.Min();
             }
             else
             {
-                data[wordsPerMinute]++;
+                key = wordsPerMinute;
             }
 
-            await File.WriteAllTextAsync(_filePath, JsonConvert.SerializeObject(data));
+            data[key]++;
             return data;
         }
     }

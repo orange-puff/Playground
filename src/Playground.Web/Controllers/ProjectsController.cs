@@ -68,7 +68,7 @@ namespace Playground.Web.Controllers
                 TypingProjectHelper.AddEntry(data, wordsPerMinute, out var key);
                 var entry = await _playgroundDbContext.Set<WordsPerMinuteFrequency>()
                     .FirstOrDefaultAsync(wpmf => wpmf.WordsPerMinute == key);
-                entry.WordsPerMinute++;
+                entry.Frequency++;
                 await _playgroundDbContext.SaveChangesAsync();
             }
             finally

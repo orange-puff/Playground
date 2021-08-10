@@ -25,10 +25,10 @@ namespace Playground.Web
 
             // database
             var connectionString = Configuration.GetConnectionString("PlaygroundDb");
-            /*services.AddDbContext<PlaygroundDbContext>(option =>
+            services.AddDbContext<PlaygroundDbContext>(option =>
             {
                 option.UseMySQL(connectionString, builder => builder.MigrationsAssembly("Playground"));
-            });*/
+            });
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -40,7 +40,7 @@ namespace Playground.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //app.UpdateDatabase();
+            app.UpdateDatabase();
 
             if (env.IsDevelopment())
             {

@@ -30,6 +30,7 @@ namespace Playground.Web.Controllers
         [HttpPost("[controller]/json_project")]
         public IActionResult JsonProject(JsonProjectModel json)
         {
+            _logger.LogInformation($"Json helper: {json}");
             if (JsonHelper.TryFormat(json.Json, out var result))
             {
                 return Ok(new JsonProjectModel

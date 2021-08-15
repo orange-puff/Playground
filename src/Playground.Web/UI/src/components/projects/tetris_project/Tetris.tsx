@@ -1,6 +1,9 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
+const NUM_ROWS = 20;
+const NUM_COLS = 10;
+
 const useStyles = makeStyles((theme) => ({
     square: {
         height: "20px",
@@ -13,15 +16,30 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+interface IPoint {
+    x: number,
+    y: number
+}
+
+interface IPiece {
+    color: string,
+    position: IPoint,
+    space: Array<IPoint>
+}
+
+interface IGameState {
+    board: Array<Array<number>>
+}
+
 const Tetris = () => {
     const styles = useStyles();
 
     const rows: Array<number> = [];
     const cols: Array<number> = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < NUM_ROWS; i++) {
         rows.push(i);
     }
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < NUM_COLS; i++) {
         cols.push(i);
     }
 
@@ -42,3 +60,10 @@ const Tetris = () => {
 }
 
 export default Tetris;
+
+/*
+ * We have pieces with specified sizes and codes
+ * We have an array of array of numbers that represents the board. 0 is empty, and some non zero number is the code of a piece
+ * 
+ * 
+*/

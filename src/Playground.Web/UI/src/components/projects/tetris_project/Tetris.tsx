@@ -16,6 +16,19 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+function constructOrangeRicky(): IPiece {
+    const tmp = IPiece {
+
+    }
+    return {
+        color: "orange",
+        position: { x: 0, y: 4 },
+        space: []{
+        { x: 0, y: 0 },
+    }
+}
+}
+
 interface IPoint {
     x: number,
     y: number
@@ -24,7 +37,7 @@ interface IPoint {
 interface IPiece {
     color: string,
     position: IPoint,
-    space: Array<IPoint>
+    space: IPoint[]
 }
 
 interface IGameState {
@@ -64,6 +77,6 @@ export default Tetris;
 /*
  * We have pieces with specified sizes and codes
  * We have an array of array of numbers that represents the board. 0 is empty, and some non zero number is the code of a piece
- * 
- * 
+ *
+ *
 */

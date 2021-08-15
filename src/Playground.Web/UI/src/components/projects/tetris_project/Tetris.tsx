@@ -16,17 +16,102 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function constructOrangeRicky(): IPiece {
-    const tmp = IPiece {
-
+function constructSBlock(): IPiece {
+    return {
+        color: "green",
+        position: { x: 0, y: 4 },
+        space: [
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 0, y: 1 },
+            { x: 0, y: 2 }
+        ],
+        code: 1
     }
+}
+
+function constructZBlock(): IPiece {
+    return {
+        color: "red",
+        position: { x: 0, y: 4 },
+        space: [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 1, y: 1 },
+            { x: 1, y: 2 }
+        ],
+        code: 2
+    }
+}
+
+function constructLBlock(): IPiece {
     return {
         color: "orange",
         position: { x: 0, y: 4 },
-        space: []{
-        { x: 0, y: 0 },
+        space: [
+            { x: 1, y: 0 },
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: 2 }
+        ],
+        code: 3
     }
 }
+
+function constructJBlock(): IPiece {
+    return {
+        color: "blue",
+        position: { x: 0, y: 4 },
+        space: [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: 2 },
+            { x: 1, y: 2 }
+        ],
+        code: 4
+    }
+}
+
+function constructSquareBlock(): IPiece {
+    return {
+        color: "yellow",
+        position: { x: 0, y: 4 },
+        space: [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 }
+        ],
+        code: 5
+    }
+}
+
+function constructIBlock(): IPiece {
+    return {
+        color: "light-blue",
+        position: { x: 0, y: 4 },
+        space: [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: 2 },
+            { x: 0, y: 3 }
+        ],
+        code: 6
+    }
+}
+
+function constructTBlock(): IPiece {
+    return {
+        color: "purple",
+        position: { x: 0, y: 4 },
+        space: [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: 2 },
+            { x: 1, y: 1 }
+        ],
+        code: 6
+    }
 }
 
 interface IPoint {
@@ -37,11 +122,14 @@ interface IPoint {
 interface IPiece {
     color: string,
     position: IPoint,
-    space: IPoint[]
+    space: IPoint[],
+    code: number
 }
 
 interface IGameState {
-    board: Array<Array<number>>
+    board: Array<Array<number>>,
+    currPiece: IPiece,
+    placedPieces: IPiece[]
 }
 
 const Tetris = () => {

@@ -4,7 +4,11 @@ import { makeStyles } from '@material-ui/core/styles';
 const ROWS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 const COLS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-const codeToColor = {
+function indexGood(i: number, j: number) {
+    return i >= 0 && i < ROWS.length && j >= 0 && j < COLS.length;
+}
+
+const codeToColor: { [key: number]: string } = {
     1: "#17f239",
     2: "#f21717",
     3: "#f07013",
@@ -178,12 +182,15 @@ function cloneGame(game: IGameState): IGameState {
 
 function initGame(): IGameState {
     const board: number[][] = [];
-    ROWS.forEach(val => board.push(new Array(COLS.length)));
-    const currPiece = constructIBlock();
-    currPiece.space.forEach(piece => board[currPiece.position.x + piece.x][currPiece.position.y + piece.y] = currPiece.code);
+    ROWS.forEach(val => board.push(new Array(COLS.length).fill(0)));
     return {
         board: board,
-        currPiece: currPiece,
+        currPiece: {
+            code: 0,
+            color: "",
+            position: { x: 0, y: 0 },
+            space: []
+        },
         placedPieces: [],
         playState: PlayState.null
     }
@@ -192,7 +199,9 @@ function initGame(): IGameState {
 function start(game: IGameState) {
     game = cloneGame(game);
     game.playState = PlayState.started;
-
+    const currPiece = constructZBlock();
+    currPiece.space.forEach(piece => game.board[currPiece.position.x + piece.x][currPiece.position.y + piece.y] = currPiece.code);
+    game.currPiece = currPiece;
     return game;
 }
 
@@ -203,8 +212,31 @@ enum Move {
     right
 }
 
-function updateGame(game: IGameState) {
+const moveMap: { [key in Move]: IPoint } = {
+    [Move.up]: { x: -1, y: 0 },
+    [Move.down]: { x: 1, y: 0 },
+    [Move.left]: { x: 0, y: -1 },
+    [Move.right]: { x: 0, y: 1 }
+};
+
+function updateGame(game: IGameState, move: Move) {
     game = cloneGame(game);
+
+    const movePoint: IPoint = moveMap[move];
+    const newPosition: IPoint = { x: game.currPiece.position.x + movePoint.x, y: game.currPiece.position.y + movePoint.y };
+    let good: boolean = true;
+    game.currPiece.space.forEach(piece => {
+        const i: number = piece.x + newPosition.x;
+        const j: number = piece.y + newPosition.y;
+        if (!indexGood(i, j) || (game.board[i][j] != game.currPiece.code && game.board[i][j] != 0)) {
+            good = false;
+        }
+    });
+    if (good) {
+        game.currPiece.space.forEach(piece => game.board[game.currPiece.position.x + piece.x][game.currPiece.position.y + piece.y] = 0);
+        game.currPiece.position = newPosition;
+        game.currPiece.space.forEach(piece => game.board[game.currPiece.position.x + piece.x][game.currPiece.position.y + piece.y] = game.currPiece.code);
+    }
 
     return game;
 }
@@ -216,16 +248,16 @@ const Tetris = () => {
 
     function onKeyDown(event: any) {
         if (event.key === "ArrowLeft") {
-
+            setGame(updateGame(game, Move.left));
         }
         else if (event.key === "ArrowRight") {
-
+            setGame(updateGame(game, Move.right));
         }
         else if (event.key === "ArrowUp") {
-
+            setGame(updateGame(game, Move.up));
         }
         else if (event.key === "ArrowDown") {
-
+            setGame(updateGame(game, Move.down));
         }
     }
 

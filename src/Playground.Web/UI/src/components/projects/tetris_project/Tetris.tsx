@@ -15,7 +15,8 @@ const codeToColor: { [key: number]: string } = {
     4: "#2413f0",
     5: "#f2ef17",
     6: "#1facd7",
-    7: "#d717f2"
+    7: "#d717f2",
+    8: "#d0cbcb"
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -196,7 +197,7 @@ function initGame(): IGameState {
     }
 }
 
-function start(game: IGameState) {
+function start(game: IGameState): IGameState {
     game = cloneGame(game);
     game.playState = PlayState.started;
     const currPiece = constructZBlock();
@@ -209,33 +210,60 @@ enum Move {
     up,
     down,
     left,
-    right
+    right,
+    space
 }
 
 const moveMap: { [key in Move]: IPoint } = {
-    [Move.up]: { x: -1, y: 0 },
     [Move.down]: { x: 1, y: 0 },
     [Move.left]: { x: 0, y: -1 },
     [Move.right]: { x: 0, y: 1 }
 };
 
-function updateGame(game: IGameState, move: Move) {
-    game = cloneGame(game);
+function findDownFacingSpace(piece: IPiece): IPoint[] {
+    var down: IPoint = moveMap[Move.down];
+    var toRet: IPoint[] = [];
 
-    const movePoint: IPoint = moveMap[move];
-    const newPosition: IPoint = { x: game.currPiece.position.x + movePoint.x, y: game.currPiece.position.y + movePoint.y };
-    let good: boolean = true;
-    game.currPiece.space.forEach(piece => {
-        const i: number = piece.x + newPosition.x;
-        const j: number = piece.y + newPosition.y;
-        if (!indexGood(i, j) || (game.board[i][j] != game.currPiece.code && game.board[i][j] != 0)) {
-            good = false;
+    for (let i = 0; i < piece.space.length; i++) {
+        const downPiece: IPoint = { x: piece.space[i].x + down.x, y: piece.space[i].y + down.y };
+        let good: boolean = false;
+        piece.space.forEach(piece => {
+            if (piece.x === downPiece.x && piece.y === downPiece.y) {
+                good = false;
+            }
+        });
+        if (good) {
+            toRet.push(piece.space[i]);
         }
-    });
-    if (good) {
-        game.currPiece.space.forEach(piece => game.board[game.currPiece.position.x + piece.x][game.currPiece.position.y + piece.y] = 0);
-        game.currPiece.position = newPosition;
-        game.currPiece.space.forEach(piece => game.board[game.currPiece.position.x + piece.x][game.currPiece.position.y + piece.y] = game.currPiece.code);
+    }
+
+    return toRet;
+}
+
+function updateGame(game: IGameState, move: Move): IGameState {
+    game = cloneGame(game);
+    if (move === Move.up) {
+
+    }
+    else if (move === Move.space) {
+
+    }
+    else {
+        const movePoint: IPoint = moveMap[move];
+        const newPosition: IPoint = { x: game.currPiece.position.x + movePoint.x, y: game.currPiece.position.y + movePoint.y };
+        let good: boolean = true;
+        game.currPiece.space.forEach(piece => {
+            const i: number = piece.x + newPosition.x;
+            const j: number = piece.y + newPosition.y;
+            if (!indexGood(i, j) || (game.board[i][j] != game.currPiece.code && game.board[i][j] != 0)) {
+                good = false;
+            }
+        });
+        if (good) {
+            game.currPiece.space.forEach(piece => game.board[game.currPiece.position.x + piece.x][game.currPiece.position.y + piece.y] = 0);
+            game.currPiece.position = newPosition;
+            game.currPiece.space.forEach(piece => game.board[game.currPiece.position.x + piece.x][game.currPiece.position.y + piece.y] = game.currPiece.code);
+        }
     }
 
     return game;
@@ -281,3 +309,8 @@ const Tetris = () => {
 }
 
 export default Tetris;
+
+/*
+ * TODO
+ * Need to figure out rotating. This will change the space of the piece
+ */

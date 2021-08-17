@@ -1,8 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 const ROWS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 const COLS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+const codeToColor = {
+    1: "#17f239",
+    2: "#f21717",
+    3: "#f07013",
+    4: "#2413f0",
+    5: "#f2ef17",
+    6: "#1facd7",
+    7: "#d717f2"
+};
 
 const useStyles = makeStyles((theme) => ({
     square: {
@@ -18,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
 function constructSBlock(): IPiece {
     return {
-        color: "#17f239",
+        color: codeToColor[1],
         position: { x: 0, y: 4 },
         space: [
             { x: 1, y: 0 },
@@ -32,7 +42,7 @@ function constructSBlock(): IPiece {
 
 function constructZBlock(): IPiece {
     return {
-        color: "#f21717",
+        color: codeToColor[2],
         position: { x: 0, y: 4 },
         space: [
             { x: 0, y: 0 },
@@ -46,7 +56,7 @@ function constructZBlock(): IPiece {
 
 function constructLBlock(): IPiece {
     return {
-        color: "#f07013",
+        color: codeToColor[3],
         position: { x: 0, y: 4 },
         space: [
             { x: 1, y: 0 },
@@ -60,7 +70,7 @@ function constructLBlock(): IPiece {
 
 function constructJBlock(): IPiece {
     return {
-        color: "#2413f0",
+        color: codeToColor[4],
         position: { x: 0, y: 4 },
         space: [
             { x: 0, y: 0 },
@@ -74,7 +84,7 @@ function constructJBlock(): IPiece {
 
 function constructOBlock(): IPiece {
     return {
-        color: "#f2ef17",
+        color: codeToColor[5],
         position: { x: 0, y: 4 },
         space: [
             { x: 0, y: 0 },
@@ -88,7 +98,7 @@ function constructOBlock(): IPiece {
 
 function constructIBlock(): IPiece {
     return {
-        color: "1facd7",
+        color: codeToColor[6],
         position: { x: 0, y: 4 },
         space: [
             { x: 0, y: 0 },
@@ -102,7 +112,7 @@ function constructIBlock(): IPiece {
 
 function constructTBlock(): IPiece {
     return {
-        color: "#d717f2",
+        color: codeToColor[7],
         position: { x: 0, y: 4 },
         space: [
             { x: 0, y: 0 },
@@ -110,7 +120,7 @@ function constructTBlock(): IPiece {
             { x: 0, y: 2 },
             { x: 1, y: 1 }
         ],
-        code: 6
+        code: 7
     }
 }
 
@@ -169,10 +179,11 @@ function cloneGame(game: IGameState): IGameState {
 function initGame(): IGameState {
     const board: number[][] = [];
     ROWS.forEach(val => board.push(new Array(COLS.length)));
-
+    const currPiece = constructIBlock();
+    currPiece.space.forEach(piece => board[currPiece.position.x + piece.x][currPiece.position.y + piece.y] = currPiece.code);
     return {
         board: board,
-        currPiece: constructIBlock(),
+        currPiece: currPiece,
         placedPieces: [],
         playState: PlayState.null
     }
@@ -201,16 +212,32 @@ function updateGame(game: IGameState) {
 const Tetris = () => {
     const styles = useStyles();
     const [game, setGame] = useState(initGame());
+    const inputRef = useRef(null);
+
+    function onKeyDown(event: any) {
+        if (event.key === "ArrowLeft") {
+
+        }
+        else if (event.key === "ArrowRight") {
+
+        }
+        else if (event.key === "ArrowUp") {
+
+        }
+        else if (event.key === "ArrowDown") {
+
+        }
+    }
 
     return (
         <div>
-            <button onClick={() => setGame(start(game))}>Start</button>
-            <div>
+            <button onClick={() => { setGame(start(game)); inputRef.current.focus(); }}>Start</button>
+            <div onKeyDown={onKeyDown} ref={inputRef} tabIndex="0">
                 {
                     ROWS.map(i =>
                         <div className={styles.row} key={i}>
                             {COLS.map(j =>
-                                <div className={styles.square} key={j}>
+                                <div className={styles.square} key={j} style={game.board[i][j] in codeToColor ? { backgroundColor: codeToColor[game.board[i][j]] } : {}}>
                                 </div>
                             )}
                         </div>

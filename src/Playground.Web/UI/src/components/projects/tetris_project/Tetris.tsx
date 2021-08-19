@@ -19,6 +19,115 @@ const codeToColor: { [key: number]: string } = {
     8: "#d0cbcb"
 };
 
+const codeToSpace: { [key: number]: IPoint[][] } = {
+    1: [
+        [
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 0, y: 1 },
+            { x: 0, y: 2 }
+        ],
+        [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 2, y: 1 }
+        ]
+    ],
+    2: [
+        [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 1, y: 1 },
+            { x: 1, y: 2 }
+        ],
+        [
+            { x: 0, y: 1 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 2, y: 0 }
+        ]
+    ],
+    3: [
+        [
+            { x: 1, y: 0 },
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: 2 }
+        ],
+        [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 1, y: 1 },
+            { x: 2, y: 1 }
+        ],
+        [
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 1, y: 2 },
+            { x: 0, y: 2 }
+        ],
+        [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 2, y: 0 },
+            { x: 2, y: 1 }
+        ]
+    ],
+    4: [
+        [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: 2 },
+            { x: 1, y: 2 }
+        ],
+        [
+            { x: 0, y: 1 },
+            { x: 1, y: 1 },
+            { x: 2, y: 1 },
+            { x: 2, y: 0 }
+        ],
+        [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 1, y: 2 }
+        ],
+        [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 2, y: 0 },
+            { x: 0, y: 1 }
+        ]
+    ],
+    5: [
+        [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 }
+        ]
+    ],
+    6: [
+        [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: 2 },
+            { x: 0, y: 3 }
+        ],
+        [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 2, y: 0 },
+            { x: 3, y: 0 }
+        ]
+    ]
+}
+
+function rotatePiece(piece: IPiece): IPiece {
+
+}
+
 const useStyles = makeStyles((theme) => ({
     square: {
         height: "20px",
@@ -35,12 +144,7 @@ function constructSBlock(): IPiece {
     return {
         color: codeToColor[1],
         position: { x: 0, y: 4 },
-        space: [
-            { x: 1, y: 0 },
-            { x: 1, y: 1 },
-            { x: 0, y: 1 },
-            { x: 0, y: 2 }
-        ],
+        space: codeToSpace[1],
         code: 1
     }
 }
@@ -49,12 +153,7 @@ function constructZBlock(): IPiece {
     return {
         color: codeToColor[2],
         position: { x: 0, y: 4 },
-        space: [
-            { x: 0, y: 0 },
-            { x: 0, y: 1 },
-            { x: 1, y: 1 },
-            { x: 1, y: 2 }
-        ],
+        space: codeToSpace[2],
         code: 2
     }
 }
@@ -63,12 +162,7 @@ function constructLBlock(): IPiece {
     return {
         color: codeToColor[3],
         position: { x: 0, y: 4 },
-        space: [
-            { x: 1, y: 0 },
-            { x: 0, y: 0 },
-            { x: 0, y: 1 },
-            { x: 0, y: 2 }
-        ],
+        space: codeToSpace[3],
         code: 3
     }
 }
@@ -77,12 +171,7 @@ function constructJBlock(): IPiece {
     return {
         color: codeToColor[4],
         position: { x: 0, y: 4 },
-        space: [
-            { x: 0, y: 0 },
-            { x: 0, y: 1 },
-            { x: 0, y: 2 },
-            { x: 1, y: 2 }
-        ],
+        space: codeToSpace[4],
         code: 4
     }
 }
@@ -91,12 +180,7 @@ function constructOBlock(): IPiece {
     return {
         color: codeToColor[5],
         position: { x: 0, y: 4 },
-        space: [
-            { x: 0, y: 0 },
-            { x: 0, y: 1 },
-            { x: 1, y: 0 },
-            { x: 1, y: 1 }
-        ],
+        space: codeToSpace[5],
         code: 5
     }
 }
@@ -105,12 +189,7 @@ function constructIBlock(): IPiece {
     return {
         color: codeToColor[6],
         position: { x: 0, y: 4 },
-        space: [
-            { x: 0, y: 0 },
-            { x: 0, y: 1 },
-            { x: 0, y: 2 },
-            { x: 0, y: 3 }
-        ],
+        space: codeToSpace[6],
         code: 6
     }
 }

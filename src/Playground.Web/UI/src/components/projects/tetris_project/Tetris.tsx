@@ -122,7 +122,7 @@ const codeToSpace: { [key: number]: IPoint[][] } = {
             { x: 3, y: 0 }
         ]
     ]
-}
+};
 
 function rotatePiece(piece: IPiece): IPiece {
 
@@ -142,61 +142,68 @@ const useStyles = makeStyles((theme) => ({
 
 function constructSBlock(): IPiece {
     return {
+        spaceInd: 0,
         color: codeToColor[1],
         position: { x: 0, y: 4 },
-        space: codeToSpace[1],
+        space: codeToSpace[1][0],
         code: 1
     }
 }
 
 function constructZBlock(): IPiece {
     return {
+        spaceInd: 0,
         color: codeToColor[2],
         position: { x: 0, y: 4 },
-        space: codeToSpace[2],
+        space: codeToSpace[2][0],
         code: 2
     }
 }
 
 function constructLBlock(): IPiece {
     return {
+        spaceInd: 0,
         color: codeToColor[3],
         position: { x: 0, y: 4 },
-        space: codeToSpace[3],
+        space: codeToSpace[3][0],
         code: 3
     }
 }
 
 function constructJBlock(): IPiece {
     return {
+        spaceInd: 0,
         color: codeToColor[4],
         position: { x: 0, y: 4 },
-        space: codeToSpace[4],
+        space: codeToSpace[4][0],
         code: 4
     }
 }
 
 function constructOBlock(): IPiece {
     return {
+        spaceInd: 0,
         color: codeToColor[5],
         position: { x: 0, y: 4 },
-        space: codeToSpace[5],
+        space: codeToSpace[5][0],
         code: 5
     }
 }
 
 function constructIBlock(): IPiece {
     return {
+        spaceInd: 0,
         color: codeToColor[6],
         position: { x: 0, y: 4 },
-        space: codeToSpace[6],
+        space: codeToSpace[6][0],
         code: 6
     }
 }
 
 function constructTBlock(): IPiece {
     return {
-        color: codeToColor[7],
+        spaceInd: 0,
+        color: codeToColor[7][0],
         position: { x: 0, y: 4 },
         space: [
             { x: 0, y: 0 },
@@ -214,6 +221,7 @@ interface IPoint {
 }
 
 interface IPiece {
+    spaceInd: number,
     color: string,
     position: IPoint,
     space: IPoint[],
@@ -222,6 +230,7 @@ interface IPiece {
 
 function clonePiece(piece: IPiece): IPiece {
     return {
+        spaceInd: piece.spaceInd,
         color: piece.color,
         position: { x: piece.position.x, y: piece.position.y },
         space: piece.space,
@@ -266,6 +275,7 @@ function initGame(): IGameState {
     return {
         board: board,
         currPiece: {
+            spaceInd: 0,
             code: 0,
             color: "",
             position: { x: 0, y: 0 },
@@ -279,7 +289,7 @@ function initGame(): IGameState {
 function start(game: IGameState): IGameState {
     game = cloneGame(game);
     game.playState = PlayState.started;
-    const currPiece = constructZBlock();
+    const currPiece = constructLBlock();
     currPiece.space.forEach(piece => game.board[currPiece.position.x + piece.x][currPiece.position.y + piece.y] = currPiece.code);
     game.currPiece = currPiece;
     return game;
@@ -299,51 +309,78 @@ const moveMap: { [key in Move]: IPoint } = {
     [Move.right]: { x: 0, y: 1 }
 };
 
-function findDownFacingSpace(piece: IPiece): IPoint[] {
-    var down: IPoint = moveMap[Move.down];
-    var toRet: IPoint[] = [];
-
-    for (let i = 0; i < piece.space.length; i++) {
-        const downPiece: IPoint = { x: piece.space[i].x + down.x, y: piece.space[i].y + down.y };
-        let good: boolean = false;
-        piece.space.forEach(piece => {
-            if (piece.x === downPiece.x && piece.y === downPiece.y) {
-                good = false;
-            }
-        });
-        if (good) {
-            toRet.push(piece.space[i]);
+function pointsContains(points: IPoint[], point: IPoint): boolean {
+    let contains: boolean = false;
+    points.forEach(p => {
+        if (p.x === point.x && p.y === point.y) {
+            contains = true;
         }
-    }
+    });
+    return contains;
+}
 
-    return toRet;
+function getPiecePoints(piece: IPiece): IPoint[] {
+    return piece.space.map(p => {
+        const toRet: IPoint = { x: p.x + piece.position.x, y: p.y + piece.position.y };
+        return toRet;
+    });
+}
+
+function isValid(board: number[][], piece: IPiece, oldPoints: IPoint[]): boolean {
+    const newPoints = getPiecePoints(piece);
+    let isValid: boolean = true;
+    newPoints.forEach(p => {
+        if (!indexGood(p.x, p.y) || (board[p.x][p.y] != 0 && !pointsContains(oldPoints, p))) {
+            isValid = false;
+        }
+    });
+
+    return isValid;
 }
 
 function updateGame(game: IGameState, move: Move): IGameState {
     game = cloneGame(game);
-    if (move === Move.up) {
 
+    /* create a new piece and see if it can fit on the board */
+    let newPiece: IPiece = {
+        space: game.currPiece.space,
+        spaceInd: game.currPiece.spaceInd,
+        code: game.currPiece.code,
+        color: game.currPiece.color,
+        position: game.currPiece.position
+    };
+
+    let newBoard: number[][] = [];
+    game.board.forEach(row => newBoard.push(Object.assign([], row)));
+
+    let oldPoints: IPoint[] = getPiecePoints(newPiece);
+
+    if (move === Move.up) {
+        console.log(codeToSpace[newPiece.code].length);
+        console.log(newPiece.spaceInd + 1);
+        newPiece.spaceInd = (newPiece.spaceInd + 1) % codeToSpace[newPiece.code].length;
+        newPiece.space = codeToSpace[newPiece.code][newPiece.spaceInd];
     }
     else if (move === Move.space) {
 
     }
     else {
         const movePoint: IPoint = moveMap[move];
-        const newPosition: IPoint = { x: game.currPiece.position.x + movePoint.x, y: game.currPiece.position.y + movePoint.y };
-        let good: boolean = true;
-        game.currPiece.space.forEach(piece => {
-            const i: number = piece.x + newPosition.x;
-            const j: number = piece.y + newPosition.y;
-            if (!indexGood(i, j) || (game.board[i][j] != game.currPiece.code && game.board[i][j] != 0)) {
-                good = false;
-            }
-        });
-        if (good) {
-            game.currPiece.space.forEach(piece => game.board[game.currPiece.position.x + piece.x][game.currPiece.position.y + piece.y] = 0);
-            game.currPiece.position = newPosition;
-            game.currPiece.space.forEach(piece => game.board[game.currPiece.position.x + piece.x][game.currPiece.position.y + piece.y] = game.currPiece.code);
-        }
+        newPiece.position = { x: newPiece.position.x + movePoint.x, y: newPiece.position.y + movePoint.y };
     }
+
+    if (isValid(newBoard, newPiece, oldPoints)) {
+        /* clear old piece */
+        oldPoints.forEach(p => newBoard[p.x][p.y] = 0);
+
+        /* add new piece to board */
+        const newPoints: IPoint[] = getPiecePoints(newPiece);
+        newPoints.forEach(p => newBoard[p.x][p.y] = newPiece.code);
+
+        game.board = newBoard;
+        game.currPiece = newPiece;
+    }
+
 
     return game;
 }

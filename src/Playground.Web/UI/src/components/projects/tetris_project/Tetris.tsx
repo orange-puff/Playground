@@ -8,6 +8,7 @@ function indexGood(i: number, j: number) {
     return i >= 0 && i < ROWS.length && j >= 0 && j < COLS.length;
 }
 
+const LOW_CODE = 8;
 const codeToColor: { [key: number]: string } = {
     1: "#17f239",
     2: "#f21717",
@@ -330,7 +331,7 @@ function isValid(board: number[][], piece: IPiece, oldPoints: IPoint[]): boolean
     const newPoints = getPiecePoints(piece);
     let isValid: boolean = true;
     newPoints.forEach(p => {
-        if (!indexGood(p.x, p.y) || (board[p.x][p.y] != 0 && !pointsContains(oldPoints, p))) {
+        if (!indexGood(p.x, p.y) || (board[p.x][p.y] != 0 && board[p.x][p.y] != 8 && !pointsContains(oldPoints, p))) {
             isValid = false;
         }
     });
@@ -338,17 +339,29 @@ function isValid(board: number[][], piece: IPiece, oldPoints: IPoint[]): boolean
     return isValid;
 }
 
+function findLowPoints(board1: number[][], piece1: IPiece, invalidPoints: IPoint[]): IPoint[] {
+    const board: number[][] = [];
+    board1.forEach(row => board.push(Object.assign([], row)));
+    let piece: IPiece = clonePiece(piece1);
+    const tmpPiece: IPiece = clonePiece(piece1);
+
+    const down: IPoint = moveMap[Move.down];
+
+    while (isValid(board, tmpPiece, invalidPoints)) {
+        piece = clonePiece(tmpPiece);
+        tmpPiece.position = { x: piece.position.x + down.x, y: piece.position.y + down.y };
+    }
+
+    let points: IPoint = getPiecePoints(piece);
+    points = points.filter(p => !pointsContains(invalidPoints, p));
+    return points;
+}
+
 function updateGame(game: IGameState, move: Move): IGameState {
     game = cloneGame(game);
 
     /* create a new piece and see if it can fit on the board */
-    let newPiece: IPiece = {
-        space: game.currPiece.space,
-        spaceInd: game.currPiece.spaceInd,
-        code: game.currPiece.code,
-        color: game.currPiece.color,
-        position: game.currPiece.position
-    };
+    let newPiece: IPiece = clonePiece(game.currPiece);
 
     let newBoard: number[][] = [];
     game.board.forEach(row => newBoard.push(Object.assign([], row)));
@@ -356,13 +369,25 @@ function updateGame(game: IGameState, move: Move): IGameState {
     let oldPoints: IPoint[] = getPiecePoints(newPiece);
 
     if (move === Move.up) {
-        console.log(codeToSpace[newPiece.code].length);
-        console.log(newPiece.spaceInd + 1);
         newPiece.spaceInd = (newPiece.spaceInd + 1) % codeToSpace[newPiece.code].length;
         newPiece.space = codeToSpace[newPiece.code][newPiece.spaceInd];
     }
     else if (move === Move.space) {
-
+        const tmpCode: number = newPiece.code;
+        newPiece.code = 8;
+        getPiecePoints(newPiece).forEach(p => newBoard[p.x][p.y] = 8);
+        const lowPoints: IPoint[] = findLowPoints(newBoard, newPiece, []);
+        newPiece.code = tmpCode;
+        lowPoints.forEach(p => newBoard[p.x][p.y] = newPiece.code);
+        for (let i = 0; i < ROWS.length; i++) {
+            for (let j = 0; j < COLS.length; j++) {
+                if (newBoard[i][j] === LOW_CODE) {
+                    newBoard[i][j] = 0;
+                }
+            }
+        }
+        game.board = newBoard;
+        return game;
     }
     else {
         const movePoint: IPoint = moveMap[move];
@@ -376,6 +401,18 @@ function updateGame(game: IGameState, move: Move): IGameState {
         /* add new piece to board */
         const newPoints: IPoint[] = getPiecePoints(newPiece);
         newPoints.forEach(p => newBoard[p.x][p.y] = newPiece.code);
+
+        /* find lowest position possible, but never place on current space */
+        for (let i = 0; i < ROWS.length; i++) {
+            for (let j = 0; j < COLS.length; j++) {
+                if (newBoard[i][j] === LOW_CODE) {
+                    newBoard[i][j] = 0;
+                }
+            }
+        }
+
+        const lowPoints: IPoint[] = findLowPoints(newBoard, newPiece, newPoints);
+        lowPoints.forEach(p => newBoard[p.x][p.y] = LOW_CODE);
 
         game.board = newBoard;
         game.currPiece = newPiece;
@@ -402,6 +439,9 @@ const Tetris = () => {
         }
         else if (event.key === "ArrowDown") {
             setGame(updateGame(game, Move.down));
+        }
+        else if (event.key === " ") {
+            setGame(updateGame(game, Move.space));
         }
     }
 

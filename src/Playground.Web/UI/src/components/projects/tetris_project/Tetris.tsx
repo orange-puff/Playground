@@ -425,8 +425,3 @@ const Tetris = () => {
 }
 
 export default Tetris;
-
-/*
- * TODO
- * Need to figure out rotating. This will change the space of the piece
- */

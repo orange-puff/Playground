@@ -290,7 +290,7 @@ function initGame(): IGameState {
 function start(game: IGameState): IGameState {
     game = cloneGame(game);
     game.playState = PlayState.started;
-    const currPiece = constructLBlock();
+    const currPiece = constructJBlock();
     currPiece.space.forEach(piece => game.board[currPiece.position.x + piece.x][currPiece.position.y + piece.y] = currPiece.code);
     game.currPiece = currPiece;
     return game;

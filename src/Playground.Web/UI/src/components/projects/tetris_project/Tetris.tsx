@@ -364,6 +364,37 @@ function findLowPoints(board1: number[][], piece1: IPiece, invalidPoints: IPoint
     return points;
 }
 
+function handleDirectionalKey(game: IGameState, move: Move): IGameState {
+    let newPiece: IPiece = clonePiece(game.currPiece);
+
+    let newBoard: number[][] = [];
+    game.board.forEach(row => newBoard.push(Object.assign([], row)));
+
+    const movePoint: IPoint = moveMap[move];
+    newPiece.position = { x: newPiece.position.x + movePoint.x, y: newPiece.position.y + movePoint.y };
+
+    if (isValid(newBoard, newPiece, oldPoints)) {
+        /* add new piece to board */
+        const newPoints: IPoint[] = getPiecePoints(newPiece);
+        newPoints.forEach(p => newBoard[p.x][p.y] = newPiece.code);
+
+        /* find lowest position possible, but never place on current space */
+        for (let i = 0; i < ROWS.length; i++) {
+            for (let j = 0; j < COLS.length; j++) {
+                if (newBoard[i][j] === LOW_CODE) {
+                    newBoard[i][j] = 0;
+                }
+            }
+        }
+
+        const lowPoints: IPoint[] = findLowPoints(newBoard, newPiece, newPoints);
+        lowPoints.forEach(p => newBoard[p.x][p.y] = LOW_CODE);
+
+        game.board = newBoard;
+        game.currPiece = newPiece;
+    }
+}
+
 function updateGame(game: IGameState, move: Move): IGameState {
     game = cloneGame(game);
 

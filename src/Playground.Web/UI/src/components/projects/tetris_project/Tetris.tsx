@@ -339,6 +339,13 @@ function isValid(board: number[][], piece: IPiece, oldPoints: IPoint[]): boolean
     return isValid;
 }
 
+function placeLowPoints(trueGame: IGameState) : IGameState {
+    const game = cloneGame(trueGame);
+
+
+
+}
+
 function findLowPoints(board1: number[][], piece1: IPiece, invalidPoints: IPoint[]): IPoint[] {
     const board: number[][] = [];
     board1.forEach(row => board.push(Object.assign([], row)));
@@ -465,3 +472,15 @@ const Tetris = () => {
 }
 
 export default Tetris;
+
+/*
+ * Different functionalities;
+ * Generate new piece
+ * place silohuette of piece
+ * handle key
+ *
+ *
+ * up -> rotate and place solohette
+ * left, right, down -> make move and place silohette
+ * space -> move down until you cannot anymore and generate new piece
+ */

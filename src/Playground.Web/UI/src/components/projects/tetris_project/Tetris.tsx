@@ -9,19 +9,18 @@ function indexGood(i: number, j: number) {
 }
 
 const LOW_CODE = 8;
-const codeToColor: { [key: number]: string } = {
-    1: "#17f239",
-    2: "#f21717",
-    3: "#f07013",
-    4: "#2413f0",
-    5: "#f2ef17",
-    6: "#1facd7",
-    7: "#d717f2",
-    8: "#d0cbcb"
-};
+
+const S_BLOCK_CODE = 1;
+const Z_BLOCK_CODE = 2;
+const L_BLOCK_CODE = 3;
+const J_BLOCK_CODE = 4;
+const O_BLOCK_CODE = 5;
+const I_BLOCK_CODE = 6;
+const T_BLOCK_CODE = 7;
+const LOW_BLOCK_CODE = 8;
 
 const codeToSpace: { [key: number]: IPoint[][] } = {
-    1: [
+    [S_BLOCK_CODE]: [
         [
             { x: 1, y: 0 },
             { x: 1, y: 1 },
@@ -35,7 +34,7 @@ const codeToSpace: { [key: number]: IPoint[][] } = {
             { x: 2, y: 1 }
         ]
     ],
-    2: [
+    [Z_BLOCK_CODE]: [
         [
             { x: 0, y: 0 },
             { x: 0, y: 1 },
@@ -49,7 +48,7 @@ const codeToSpace: { [key: number]: IPoint[][] } = {
             { x: 2, y: 0 }
         ]
     ],
-    3: [
+    [L_BLOCK_CODE]: [
         [
             { x: 1, y: 0 },
             { x: 0, y: 0 },
@@ -75,7 +74,7 @@ const codeToSpace: { [key: number]: IPoint[][] } = {
             { x: 2, y: 1 }
         ]
     ],
-    4: [
+    [J_BLOCK_CODE]: [
         [
             { x: 0, y: 0 },
             { x: 0, y: 1 },
@@ -101,7 +100,7 @@ const codeToSpace: { [key: number]: IPoint[][] } = {
             { x: 0, y: 1 }
         ]
     ],
-    5: [
+    [O_BLOCK_CODE]: [
         [
             { x: 0, y: 0 },
             { x: 0, y: 1 },
@@ -109,7 +108,7 @@ const codeToSpace: { [key: number]: IPoint[][] } = {
             { x: 1, y: 1 }
         ]
     ],
-    6: [
+    [I_BLOCK_CODE]: [
         [
             { x: 0, y: 0 },
             { x: 0, y: 1 },
@@ -125,8 +124,35 @@ const codeToSpace: { [key: number]: IPoint[][] } = {
     ]
 };
 
-function rotatePiece(piece: IPiece): IPiece {
+const codeToColor: { [key: number]: string } = {
+    [S_BLOCK_CODE]: "#17f239",
+    [Z_BLOCK_CODE]: "#f21717",
+    [L_BLOCK_CODE]: "#f07013",
+    [J_BLOCK_CODE]: "#2413f0",
+    [O_BLOCK_CODE]: "#f2ef17",
+    [I_BLOCK_CODE]: "#1facd7",
+    [T_BLOCK_CODE]: "#d717f2",
+    [LOW_BLOCK_CODE]: "#d0cbcb"
+};
 
+function generateRandomPiece(): IPiece {
+    const pieceNum: number = Math.floor((Math.random() * 7) + 1);
+    switch (pieceNum) {
+        case S_BLOCK_CODE:
+            return constructSBlock();
+        case Z_BLOCK_CODE:
+            return constructZBlock();
+        case L_BLOCK_CODE:
+            return constructLBlock();
+        case J_BLOCK_CODE:
+            return constructJBlock();
+        case O_BLOCK_CODE:
+            return constructOBlock();
+        case I_BLOCK_CODE:
+            return constructIBlock();
+        case T_BLOCK_CODE:
+            return constructTBlock();
+    }
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -144,67 +170,67 @@ const useStyles = makeStyles((theme) => ({
 function constructSBlock(): IPiece {
     return {
         spaceInd: 0,
-        color: codeToColor[1],
+        color: codeToColor[S_BLOCK_CODE],
         position: { x: 0, y: 4 },
-        space: codeToSpace[1][0],
-        code: 1
+        space: codeToSpace[S_BLOCK_CODE][0],
+        code: S_BLOCK_CODE
     }
 }
 
 function constructZBlock(): IPiece {
     return {
         spaceInd: 0,
-        color: codeToColor[2],
+        color: codeToColor[Z_BLOCK_CODE],
         position: { x: 0, y: 4 },
-        space: codeToSpace[2][0],
-        code: 2
+        space: codeToSpace[Z_BLOCK_CODE][0],
+        code: Z_BLOCK_CODE
     }
 }
 
 function constructLBlock(): IPiece {
     return {
         spaceInd: 0,
-        color: codeToColor[3],
+        color: codeToColor[L_BLOCK_CODE],
         position: { x: 0, y: 4 },
-        space: codeToSpace[3][0],
-        code: 3
+        space: codeToSpace[L_BLOCK_CODE][0],
+        code: L_BLOCK_CODE
     }
 }
 
 function constructJBlock(): IPiece {
     return {
         spaceInd: 0,
-        color: codeToColor[4],
+        color: codeToColor[J_BLOCK_CODE],
         position: { x: 0, y: 4 },
-        space: codeToSpace[4][0],
-        code: 4
+        space: codeToSpace[J_BLOCK_CODE][0],
+        code: J_BLOCK_CODE
     }
 }
 
 function constructOBlock(): IPiece {
     return {
         spaceInd: 0,
-        color: codeToColor[5],
+        color: codeToColor[O_BLOCK_CODE],
         position: { x: 0, y: 4 },
-        space: codeToSpace[5][0],
-        code: 5
+        space: codeToSpace[O_BLOCK_CODE][0],
+        code: O_BLOCK_CODE
     }
 }
 
 function constructIBlock(): IPiece {
     return {
         spaceInd: 0,
-        color: codeToColor[6],
+        color: codeToColor[I_BLOCK_CODE],
         position: { x: 0, y: 4 },
-        space: codeToSpace[6][0],
-        code: 6
+        space: codeToSpace[I_BLOCK_CODE][0],
+        code: I_BLOCK_CODE
     }
 }
 
 function constructTBlock(): IPiece {
     return {
         spaceInd: 0,
-        color: codeToColor[7][0],
+        color: codeToColor[T_BLOCK_CODE][0],
         position: { x: 0, y: 4 },
         space: [
             { x: 0, y: 0 },
@@ -212,7 +238,7 @@ function constructTBlock(): IPiece {
             { x: 0, y: 2 },
             { x: 1, y: 1 }
         ],
-        code: 7
+        code: T_BLOCK_CODE
     }
 }
 
@@ -505,13 +531,14 @@ const Tetris = () => {
 export default Tetris;
 
 /*
- * Different functionalities;
- * Generate new piece
- * place silohuette of piece
- * handle key
+ * User clicks start:
+ * Create random piece
+ * Set board values to that piece
+ * Find lower points, set the bottom point to gray
  *
+ * Create interval job, every second, that applies the moveDown function
+ * Have a key listener that handles up, down, left, right
+ * Up, Down, Left, Right: remove current pieces space from board. Apply movement to piece. Apply color, lower points
  *
- * up -> rotate and place solohette
- * left, right, down -> make move and place silohette
- * space -> move down until you cannot anymore and generate new piece
+ * After move, apply handler that removes any full rows. If a full row is removed, a new piece must be generated
  */

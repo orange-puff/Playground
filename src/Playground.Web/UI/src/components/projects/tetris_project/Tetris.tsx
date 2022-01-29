@@ -309,7 +309,7 @@ function tryPlacePiece(board: number[][], piece: IPiece) {
     return canPlace;
 }
 
-function placeDownPiece(board: number[][], piece: IPiece) {
+function findDownPieces(board: number[][], piece: IPiece) {
     const low: IPiece = clonePiece(piece);
     
     let lowPoints: IPoint[] = [];
@@ -323,8 +323,7 @@ function placeDownPiece(board: number[][], piece: IPiece) {
 
         let canPlace = true;
         downPoints.forEach(point => {
-            console.log(point);
-            canPlace = canPlace && indexGood(point.x, point.y) && (board[point.x][point.y] === 0 || board[point.x][point.y] === piece.code);
+            canPlace = canPlace && indexGood(point.x, point.y) && (board[point.x][point.y] === 0 || board[point.x][point.y] === piece.code || board[point.x][point.y] === LOW_BLOCK_CODE);
         });
 
         if (canPlace) {
@@ -335,6 +334,11 @@ function placeDownPiece(board: number[][], piece: IPiece) {
         }
     }
 
+    return lowPoints;
+}
+
+function placeDownPiece(board: number[][], piece: IPiece) {
+    const lowPoints = findDownPieces(board, piece);
     lowPoints.forEach(point => board[point.x][point.y] = LOW_BLOCK_CODE);
 }
 
@@ -352,6 +356,7 @@ function initGame(): IGameState {
 
 function start(): IGameState {
     return initGame();
+    // start interval
 }
 
 enum Move {
@@ -370,148 +375,62 @@ const moveMap: { [key in Move]: IPoint } = {
     [Move.space]: {x: 0, y: 0}
 };
 
-function pointsContains(points: IPoint[], point: IPoint): boolean {
-    let contains: boolean = false;
-    points.forEach(p => {
-        if (p.x === point.x && p.y === point.y) {
-            contains = true;
-        }
-    });
-    return contains;
+function handleUp() {
+
 }
 
-function getPiecePoints(piece: IPiece): IPoint[] {
-    return piece.space.map(p => {
-        const toRet: IPoint = { x: p.x + piece.position.x, y: p.y + piece.position.y };
-        return toRet;
-    });
+function handleSpace() {
+
 }
 
-function isValid(board: number[][], piece: IPiece, oldPoints: IPoint[]): boolean {
-    const newPoints = getPiecePoints(piece);
-    let isValid: boolean = true;
-    newPoints.forEach(p => {
-        if (!indexGood(p.x, p.y) || (board[p.x][p.y] != 0 && board[p.x][p.y] != 8 && !pointsContains(oldPoints, p))) {
-            isValid = false;
+function deletePiece(board: number[][], piece: IPiece) {
+    let canDelete = true;
+    piece.space.forEach(offSet => {
+        if (board[piece.position.x + offSet.x][piece.position.y + offSet.y] !== piece.code) {
+            canDelete = false;
         }
     });
 
-    return isValid;
-}
-
-
-function findLowPoints(board1: number[][], piece1: IPiece, invalidPoints: IPoint[]): IPoint[] {
-    const board: number[][] = [];
-    board1.forEach(row => board.push(Object.assign([], row)));
-    let piece: IPiece = clonePiece(piece1);
-    const tmpPiece: IPiece = clonePiece(piece1);
-
-    const down: IPoint = moveMap[Move.down];
-
-    while (isValid(board, tmpPiece, invalidPoints)) {
-        piece = clonePiece(tmpPiece);
-        tmpPiece.position = { x: piece.position.x + down.x, y: piece.position.y + down.y };
-    }
-
-    let points: IPoint[] = getPiecePoints(piece);
-    points = points.filter(p => !pointsContains(invalidPoints, p));
-    return points;
-}
-
-/*
-function handleDirectionalKey(game: IGameState, move: Move): IGameState {
-    let newPiece: IPiece = clonePiece(game.currPiece);
-
-    let newBoard: number[][] = [];
-    game.board.forEach(row => newBoard.push(Object.assign([], row)));
-
-    const movePoint: IPoint = moveMap[move];
-    newPiece.position = { x: newPiece.position.x + movePoint.x, y: newPiece.position.y + movePoint.y };
-
-    if (isValid(newBoard, newPiece, oldPoints)) {
-        const newPoints: IPoint[] = getPiecePoints(newPiece);
-        newPoints.forEach(p => newBoard[p.x][p.y] = newPiece.code);
-
-        for (let i = 0; i < ROWS.length; i++) {
-            for (let j = 0; j < COLS.length; j++) {
-                if (newBoard[i][j] === LOW_CODE) {
-                    newBoard[i][j] = 0;
-                }
-            }
-        }
-
-        const lowPoints: IPoint[] = findLowPoints(newBoard, newPiece, newPoints);
-        lowPoints.forEach(p => newBoard[p.x][p.y] = LOW_CODE);
-
-        game.board = newBoard;
-        game.currPiece = newPiece;
+    if (canDelete) {
+        deleteLowPiece(board, piece);
+        piece.space.forEach(offSet => board[piece.position.x + offSet.x][piece.position.y + offSet.y] = 0);
     }
 }
-*/
 
-function updateGame(game: IGameState, move: Move): IGameState {
-    game = cloneGame(game);
+function deleteLowPiece(board: number[][], piece: IPiece) {
+    const lowPoints = findDownPieces(board, piece);
+    lowPoints.forEach(point => board[point.x][point.y] = 0);
+}
 
-    /* create a new piece and see if it can fit on the board */
-    let newPiece: IPiece = clonePiece(game.currPiece);
+function handleDirectional(game: IGameState, move: IPoint): IGameState {
+    // delete piece from board
+    deletePiece(game.board, game.currPiece);
 
-    let newBoard: number[][] = [];
-    game.board.forEach(row => newBoard.push(Object.assign([], row)));
+    // create new piece
+    const newPiece = clonePiece(game.currPiece);
+    newPiece.position.x += move.x;
+    newPiece.position.y += move.y;
 
-    let oldPoints: IPoint[] = getPiecePoints(newPiece);
-
-    if (move === Move.up) {
-        newPiece.spaceInd = (newPiece.spaceInd + 1) % codeToSpace[newPiece.code].length;
-        newPiece.space = codeToSpace[newPiece.code][newPiece.spaceInd];
-    }
-    else if (move === Move.space) {
-        const tmpCode: number = newPiece.code;
-        newPiece.code = 8;
-        getPiecePoints(newPiece).forEach(p => newBoard[p.x][p.y] = 8);
-        const lowPoints: IPoint[] = findLowPoints(newBoard, newPiece, []);
-        newPiece.code = tmpCode;
-        lowPoints.forEach(p => newBoard[p.x][p.y] = newPiece.code);
-        for (let i = 0; i < ROWS.length; i++) {
-            for (let j = 0; j < COLS.length; j++) {
-                if (newBoard[i][j] === LOW_BLOCK_CODE) {
-                    newBoard[i][j] = 0;
-                }
-            }
-        }
-        game.board = newBoard;
-        return game;
+    // try place the newPiece, if you cannot, place the old piece
+    if (!tryPlacePiece(game.board, newPiece)) {
+        tryPlacePiece(game.board, game.currPiece);
     }
     else {
-        const movePoint: IPoint = moveMap[move];
-        newPiece.position = { x: newPiece.position.x + movePoint.x, y: newPiece.position.y + movePoint.y };
-    }
-
-    if (isValid(newBoard, newPiece, oldPoints)) {
-        /* clear old piece */
-        oldPoints.forEach(p => newBoard[p.x][p.y] = 0);
-
-        /* add new piece to board */
-        const newPoints: IPoint[] = getPiecePoints(newPiece);
-        newPoints.forEach(p => newBoard[p.x][p.y] = newPiece.code);
-
-        /* find lowest position possible, but never place on current space */
-        for (let i = 0; i < ROWS.length; i++) {
-            for (let j = 0; j < COLS.length; j++) {
-                if (newBoard[i][j] === LOW_BLOCK_CODE) {
-                    newBoard[i][j] = 0;
-                }
-            }
-        }
-
-        const lowPoints: IPoint[] = findLowPoints(newBoard, newPiece, newPoints);
-        lowPoints.forEach(p => newBoard[p.x][p.y] = LOW_BLOCK_CODE);
-
-        game.board = newBoard;
         game.currPiece = newPiece;
     }
 
-
     return game;
+}
+
+function updateGame(game: IGameState, move: Move): IGameState {
+    switch (move) {
+        case Move.up:
+            break;
+        case Move.space:
+            break;
+        default:
+            return handleDirectional(game, moveMap[move]);
+    }
 }
 
 const Tetris = () => {
@@ -520,20 +439,21 @@ const Tetris = () => {
     const inputRef = useRef(null);
 
     function onKeyDown(event: any) {
+        const clonedGame = cloneGame(game);
         if (event.key === "ArrowLeft") {
-            setGame(updateGame(game, Move.left));
+            setGame(updateGame(clonedGame, Move.left));
         }
         else if (event.key === "ArrowRight") {
-            setGame(updateGame(game, Move.right));
+            setGame(updateGame(clonedGame, Move.right));
         }
         else if (event.key === "ArrowUp") {
-            setGame(updateGame(game, Move.up));
+            setGame(updateGame(clonedGame, Move.up));
         }
         else if (event.key === "ArrowDown") {
-            setGame(updateGame(game, Move.down));
+            setGame(updateGame(clonedGame, Move.down));
         }
         else if (event.key === " ") {
-            setGame(updateGame(game, Move.space));
+            setGame(updateGame(clonedGame, Move.space));
         }
     }
 
@@ -557,16 +477,3 @@ const Tetris = () => {
 }
 
 export default Tetris;
-
-/*
- * User clicks start:
- * Create random piece
- * Set board values to that piece
- * Find lower points, set the bottom point to gray
- *
- * Create interval job, every second, that applies the moveDown function
- * Have a key listener that handles up, down, left, right
- * Up, Down, Left, Right: remove current pieces space from board. Apply movement to piece. Apply color, lower points
- *
- * After move, apply handler that removes any full rows. If a full row is removed, a new piece must be generated
- */

@@ -1,7 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { off } from 'process';
-import { PictureInPictureSharp } from '@material-ui/icons';
 
 const ROWS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 const COLS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -265,11 +263,6 @@ function clonePiece(piece: IPiece): IPiece {
     };
 }
 
-enum PlayState {
-    null,
-    started
-}
-
 interface IGameState {
     board: number[][],
     currPiece: IPiece
@@ -287,33 +280,37 @@ function cloneGame(game: IGameState): IGameState {
     };
 }
 
-// remove current piece
-// try place new piece, if works, place shadow, return true/false
-// if I cannot place new piece, add my piece back
-// try remove row(s)
-
-// place piece should be, place reale piece, place low piece
-function tryPlacePiece(board: number[][], piece: IPiece) {
+function tryPlacePiece(board: number[][], piece: IPiece): boolean {
     let canPlace: boolean = true;
     piece.space.forEach(offset => {
-        if (board[piece.position.x + offset.x][piece.position.y + offset.y] != 0 && board[piece.position.x + offset.x][piece.position.y + offset.y] != LOW_BLOCK_CODE) {
+        let i = piece.position.x + offset.x;
+        let j = piece.position.y + offset.y;
+        if (!indexGood(i, j) || (board[i][j] != 0 && board[i][j] != LOW_BLOCK_CODE)) {
             canPlace = false;
         }
     });
 
     if (canPlace) {
         piece.space.forEach(offset => board[piece.position.x + offset.x][piece.position.y + offset.y] = piece.code);
-        placeDownPiece(board, piece);
+        placeLowPoints(board, piece);
     }
 
     return canPlace;
 }
 
-function findDownPieces(board: number[][], piece: IPiece) {
+function pointsContain(points: IPoint[], point: IPoint): boolean {
+    let contains = false;
+    points.forEach(p => contains = contains || (p.x === point.x && p.y === point.y));
+    return contains;
+}
+
+function findLowPoints(board: number[][], piece: IPiece): IPoint[] {
     const low: IPiece = clonePiece(piece);
     
     let lowPoints: IPoint[] = [];
     let downx: number = low.position.x;
+    const piecePoints: IPoint[] = [];
+    piece.space.forEach(p => piecePoints.push({x: p.x + piece.position.x, y: p.y + piece.position.y}));
     while (true) {
         downx = downx + 1;
         const downPoints: IPoint[] = [];
@@ -323,7 +320,7 @@ function findDownPieces(board: number[][], piece: IPiece) {
 
         let canPlace = true;
         downPoints.forEach(point => {
-            canPlace = canPlace && indexGood(point.x, point.y) && (board[point.x][point.y] === 0 || board[point.x][point.y] === piece.code || board[point.x][point.y] === LOW_BLOCK_CODE);
+            canPlace = canPlace && indexGood(point.x, point.y) && (board[point.x][point.y] === 0 || pointsContain(piecePoints, point) || board[point.x][point.y] === LOW_BLOCK_CODE);
         });
 
         if (canPlace) {
@@ -337,9 +334,13 @@ function findDownPieces(board: number[][], piece: IPiece) {
     return lowPoints;
 }
 
-function placeDownPiece(board: number[][], piece: IPiece) {
-    const lowPoints = findDownPieces(board, piece);
-    lowPoints.forEach(point => board[point.x][point.y] = LOW_BLOCK_CODE);
+function placeLowPoints(board: number[][], piece: IPiece) {
+    const lowPoints = findLowPoints(board, piece);
+    lowPoints.forEach(point => {
+        if (board[point.x][point.y] === 0) {
+            board[point.x][point.y] = LOW_BLOCK_CODE;
+        }
+    });
 }
 
 function initGame(): IGameState {
@@ -379,8 +380,47 @@ function handleUp() {
 
 }
 
-function handleSpace() {
+function rowCheck(board: number[][]) : boolean {
+    let validRowCheck: boolean = false;
+    for (let i = 0; i < board.length; i++) {
+        let fullRow: boolean = true;
+        for (let j = 0; j < board[0].length; j++) {
+            if (board[i][j] === 0 || board[i][j] === LOW_BLOCK_CODE) {
+                fullRow = false;
+                break;
+            }
+        }
 
+        if (fullRow) {
+            for (let j = 0; j < board[0].length; j++) {
+                board[i][j] = 0;
+            }
+        }
+        validRowCheck = validRowCheck || fullRow;
+    }
+
+    return validRowCheck;
+}
+
+function handleSpace(game: IGameState): IGameState {
+    // find low points
+    const lowPoints = findLowPoints(game.board, game.currPiece);
+
+    // delete piece
+    deletePiece(game.board, game.currPiece);
+
+    // place piece at low points
+    lowPoints.forEach(point => game.board[point.x][point.y] = game.currPiece.code);
+
+    // trigger row check
+    rowCheck(game.board);
+
+    // game gets new piece
+    game.currPiece = generateRandomBlock();
+    if (!tryPlacePiece(game.board, game.currPiece)) {
+        return initGame();
+    }
+    return game;
 }
 
 function deletePiece(board: number[][], piece: IPiece) {
@@ -392,28 +432,40 @@ function deletePiece(board: number[][], piece: IPiece) {
     });
 
     if (canDelete) {
-        deleteLowPiece(board, piece);
+        deleteLowPoints(board, piece);
         piece.space.forEach(offSet => board[piece.position.x + offSet.x][piece.position.y + offSet.y] = 0);
     }
 }
 
-function deleteLowPiece(board: number[][], piece: IPiece) {
-    const lowPoints = findDownPieces(board, piece);
-    lowPoints.forEach(point => board[point.x][point.y] = 0);
+function deleteLowPoints(board: number[][], piece: IPiece) {
+    const lowPoints = findLowPoints(board, piece);
+    lowPoints.forEach(point => {
+        if (board[point.x][point.y] === LOW_BLOCK_CODE) {
+            board[point.x][point.y] = 0;
+        }
+    });
 }
 
-function handleDirectional(game: IGameState, move: IPoint): IGameState {
+function handleDirectional(game: IGameState, move: Move): IGameState {
     // delete piece from board
     deletePiece(game.board, game.currPiece);
 
     // create new piece
+    const movePos = moveMap[move];
     const newPiece = clonePiece(game.currPiece);
-    newPiece.position.x += move.x;
-    newPiece.position.y += move.y;
+    newPiece.position.x += movePos.x;
+    newPiece.position.y += movePos.y;
 
     // try place the newPiece, if you cannot, place the old piece
     if (!tryPlacePiece(game.board, newPiece)) {
         tryPlacePiece(game.board, game.currPiece);
+        // time to generate a new piece
+        if (rowCheck(game.board) || move === Move.down) {
+            game.currPiece = generateRandomBlock();
+            if (!tryPlacePiece(game.board, game.currPiece)) {
+                return initGame();
+            }
+        }
     }
     else {
         game.currPiece = newPiece;
@@ -427,9 +479,9 @@ function updateGame(game: IGameState, move: Move): IGameState {
         case Move.up:
             break;
         case Move.space:
-            break;
+            return handleSpace(game);
         default:
-            return handleDirectional(game, moveMap[move]);
+            return handleDirectional(game, move);
     }
 }
 

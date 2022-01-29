@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import { Chart } from "react-google-charts";
-import WORDS from './words';
+import WORDS from './words.js';
 
 const BOX_WIDTH = 1024;
 const BOX_HEIGHT = 140;
@@ -278,7 +278,7 @@ const TypingProject = () => {
             else {
                 tmpStyles[0] = BAD_STYLE;
             }
-            tmpAccuracy = ((tmpGoodWords * 100) / tmpTotalWords).toFixed(0);
+            tmpAccuracy = parseFloat(((tmpGoodWords * 100) / tmpTotalWords).toFixed(0));
 
             tmpLeft.splice(0, 0, '');
             tmpStyles.splice(0, 0, GOOD_STYLE);

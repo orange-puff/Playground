@@ -16,7 +16,7 @@ namespace Playground.Utilities.TypingProject
             }
             else if (wordsPerMinute >= data.Keys.Max())
             {
-                key = data.Keys.Min();
+                key = data.Keys.Max();
             }
             else
             {

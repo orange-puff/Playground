@@ -382,6 +382,8 @@ function handleUp() {
 
 function rowCheck(board: number[][]) : boolean {
     let validRowCheck: boolean = false;
+
+    // clear all full rows
     for (let i = 0; i < board.length; i++) {
         let fullRow: boolean = true;
         for (let j = 0; j < board[0].length; j++) {
@@ -398,6 +400,13 @@ function rowCheck(board: number[][]) : boolean {
         }
         validRowCheck = validRowCheck || fullRow;
     }
+
+    if (!validRowCheck) {
+        return validRowCheck;
+    }
+
+    // anything above the deleted rows needs to be moved down
+    
 
     return validRowCheck;
 }

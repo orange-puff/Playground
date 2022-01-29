@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { off } from 'process';
+import { PictureInPictureSharp } from '@material-ui/icons';
 
 const ROWS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 const COLS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
@@ -7,8 +9,6 @@ const COLS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 function indexGood(i: number, j: number) {
     return i >= 0 && i < ROWS.length && j >= 0 && j < COLS.length;
 }
-
-const LOW_CODE = 8;
 
 const S_BLOCK_CODE = 1;
 const Z_BLOCK_CODE = 2;
@@ -135,7 +135,7 @@ const codeToColor: { [key: number]: string } = {
     [LOW_BLOCK_CODE]: "#d0cbcb"
 };
 
-function generateRandomPiece(): IPiece {
+function generateRandomBlock(): IPiece {
     const pieceNum: number = Math.floor((Math.random() * 7) + 1);
     switch (pieceNum) {
         case S_BLOCK_CODE:
@@ -272,9 +272,7 @@ enum PlayState {
 
 interface IGameState {
     board: number[][],
-    currPiece: IPiece,
-    placedPieces: IPiece[],
-    playState: PlayState
+    currPiece: IPiece
 }
 
 function cloneGame(game: IGameState): IGameState {
@@ -283,43 +281,77 @@ function cloneGame(game: IGameState): IGameState {
 
     const currPiece: IPiece = clonePiece(game.currPiece);
 
-    const placedPieces: IPiece[] = [];
-    game.placedPieces.forEach(piece => placedPieces.push(clonePiece(piece)));
-
-    const playState: PlayState = game.playState;
-
     return {
         board: board,
-        currPiece: currPiece,
-        placedPieces: placedPieces,
-        playState: PlayState
+        currPiece: currPiece
     };
+}
+
+// remove current piece
+// try place new piece, if works, place shadow, return true/false
+// if I cannot place new piece, add my piece back
+// try remove row(s)
+
+// place piece should be, place reale piece, place low piece
+function tryPlacePiece(board: number[][], piece: IPiece) {
+    let canPlace: boolean = true;
+    piece.space.forEach(offset => {
+        if (board[piece.position.x + offset.x][piece.position.y + offset.y] != 0 && board[piece.position.x + offset.x][piece.position.y + offset.y] != LOW_BLOCK_CODE) {
+            canPlace = false;
+        }
+    });
+
+    if (canPlace) {
+        piece.space.forEach(offset => board[piece.position.x + offset.x][piece.position.y + offset.y] = piece.code);
+        placeDownPiece(board, piece);
+    }
+
+    return canPlace;
+}
+
+function placeDownPiece(board: number[][], piece: IPiece) {
+    const low: IPiece = clonePiece(piece);
+    
+    let lowPoints: IPoint[] = [];
+    let downx: number = low.position.x;
+    while (true) {
+        downx = downx + 1;
+        const downPoints: IPoint[] = [];
+        piece.space.forEach(offSet => {
+            downPoints.push({x: downx + offSet.x, y: piece.position.y + offSet.y});
+        });
+
+        let canPlace = true;
+        downPoints.forEach(point => {
+            console.log(point);
+            canPlace = canPlace && indexGood(point.x, point.y) && (board[point.x][point.y] === 0 || board[point.x][point.y] === piece.code);
+        });
+
+        if (canPlace) {
+            lowPoints = downPoints;
+        }
+        else {
+            break;
+        }
+    }
+
+    lowPoints.forEach(point => board[point.x][point.y] = LOW_BLOCK_CODE);
 }
 
 function initGame(): IGameState {
     const board: number[][] = [];
     ROWS.forEach(val => board.push(new Array(COLS.length).fill(0)));
+    const piece: IPiece = generateRandomBlock();
+    tryPlacePiece(board, piece);
+
     return {
         board: board,
-        currPiece: {
-            spaceInd: 0,
-            code: 0,
-            color: "",
-            position: { x: 0, y: 0 },
-            space: []
-        },
-        placedPieces: [],
-        playState: PlayState.null
+        currPiece: piece
     }
 }
 
-function start(game: IGameState): IGameState {
-    game = cloneGame(game);
-    game.playState = PlayState.started;
-    const currPiece = constructJBlock();
-    currPiece.space.forEach(piece => game.board[currPiece.position.x + piece.x][currPiece.position.y + piece.y] = currPiece.code);
-    game.currPiece = currPiece;
-    return game;
+function start(): IGameState {
+    return initGame();
 }
 
 enum Move {
@@ -333,7 +365,9 @@ enum Move {
 const moveMap: { [key in Move]: IPoint } = {
     [Move.down]: { x: 1, y: 0 },
     [Move.left]: { x: 0, y: -1 },
-    [Move.right]: { x: 0, y: 1 }
+    [Move.right]: { x: 0, y: 1 },
+    [Move.up]: {x: 0, y: 0},
+    [Move.space]: {x: 0, y: 0}
 };
 
 function pointsContains(points: IPoint[], point: IPoint): boolean {
@@ -365,12 +399,6 @@ function isValid(board: number[][], piece: IPiece, oldPoints: IPoint[]): boolean
     return isValid;
 }
 
-function placeLowPoints(trueGame: IGameState) : IGameState {
-    const game = cloneGame(trueGame);
-
-
-
-}
 
 function findLowPoints(board1: number[][], piece1: IPiece, invalidPoints: IPoint[]): IPoint[] {
     const board: number[][] = [];
@@ -385,11 +413,12 @@ function findLowPoints(board1: number[][], piece1: IPiece, invalidPoints: IPoint
         tmpPiece.position = { x: piece.position.x + down.x, y: piece.position.y + down.y };
     }
 
-    let points: IPoint = getPiecePoints(piece);
+    let points: IPoint[] = getPiecePoints(piece);
     points = points.filter(p => !pointsContains(invalidPoints, p));
     return points;
 }
 
+/*
 function handleDirectionalKey(game: IGameState, move: Move): IGameState {
     let newPiece: IPiece = clonePiece(game.currPiece);
 
@@ -400,11 +429,9 @@ function handleDirectionalKey(game: IGameState, move: Move): IGameState {
     newPiece.position = { x: newPiece.position.x + movePoint.x, y: newPiece.position.y + movePoint.y };
 
     if (isValid(newBoard, newPiece, oldPoints)) {
-        /* add new piece to board */
         const newPoints: IPoint[] = getPiecePoints(newPiece);
         newPoints.forEach(p => newBoard[p.x][p.y] = newPiece.code);
 
-        /* find lowest position possible, but never place on current space */
         for (let i = 0; i < ROWS.length; i++) {
             for (let j = 0; j < COLS.length; j++) {
                 if (newBoard[i][j] === LOW_CODE) {
@@ -420,6 +447,7 @@ function handleDirectionalKey(game: IGameState, move: Move): IGameState {
         game.currPiece = newPiece;
     }
 }
+*/
 
 function updateGame(game: IGameState, move: Move): IGameState {
     game = cloneGame(game);
@@ -445,7 +473,7 @@ function updateGame(game: IGameState, move: Move): IGameState {
         lowPoints.forEach(p => newBoard[p.x][p.y] = newPiece.code);
         for (let i = 0; i < ROWS.length; i++) {
             for (let j = 0; j < COLS.length; j++) {
-                if (newBoard[i][j] === LOW_CODE) {
+                if (newBoard[i][j] === LOW_BLOCK_CODE) {
                     newBoard[i][j] = 0;
                 }
             }
@@ -469,14 +497,14 @@ function updateGame(game: IGameState, move: Move): IGameState {
         /* find lowest position possible, but never place on current space */
         for (let i = 0; i < ROWS.length; i++) {
             for (let j = 0; j < COLS.length; j++) {
-                if (newBoard[i][j] === LOW_CODE) {
+                if (newBoard[i][j] === LOW_BLOCK_CODE) {
                     newBoard[i][j] = 0;
                 }
             }
         }
 
         const lowPoints: IPoint[] = findLowPoints(newBoard, newPiece, newPoints);
-        lowPoints.forEach(p => newBoard[p.x][p.y] = LOW_CODE);
+        lowPoints.forEach(p => newBoard[p.x][p.y] = LOW_BLOCK_CODE);
 
         game.board = newBoard;
         game.currPiece = newPiece;
@@ -488,7 +516,7 @@ function updateGame(game: IGameState, move: Move): IGameState {
 
 const Tetris = () => {
     const styles = useStyles();
-    const [game, setGame] = useState(initGame());
+    const [game, setGame] = useState<IGameState>(null);
     const inputRef = useRef(null);
 
     function onKeyDown(event: any) {
@@ -511,13 +539,13 @@ const Tetris = () => {
 
     return (
         <div>
-            <button onClick={() => { setGame(start(game)); inputRef.current.focus(); }}>Start</button>
-            <div onKeyDown={onKeyDown} ref={inputRef} tabIndex="0">
+            <button onClick={() => { setGame(start()); inputRef.current.focus(); }}>Start</button>
+            <div onKeyDown={onKeyDown} ref={inputRef} tabIndex={0}>
                 {
                     ROWS.map(i =>
                         <div className={styles.row} key={i}>
                             {COLS.map(j =>
-                                <div className={styles.square} key={j} style={game.board[i][j] in codeToColor ? { backgroundColor: codeToColor[game.board[i][j]] } : {}}>
+                                <div className={styles.square} key={j} style={game != null && game.board[i][j] in codeToColor ? { backgroundColor: codeToColor[game.board[i][j]] } : {}}>
                                 </div>
                             )}
                         </div>

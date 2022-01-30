@@ -412,11 +412,15 @@ function rowCheck(board: number[][]) : boolean {
 }
 
 function handleSpace(game: IGameState): IGameState {
-    // find low points
-    const lowPoints = findLowPoints(game.board, game.currPiece);
-
     // delete piece
     deletePiece(game.board, game.currPiece);
+
+    if (game.currPiece.position.x > 0) {
+        game.currPiece.position.x -= 1;
+    }
+
+    // find low points
+    const lowPoints = findLowPoints(game.board, game.currPiece);
 
     // place piece at low points
     lowPoints.forEach(point => game.board[point.x][point.y] = game.currPiece.code);

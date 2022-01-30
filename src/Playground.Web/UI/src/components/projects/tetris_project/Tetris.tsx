@@ -126,6 +126,24 @@ const codeToSpace: { [key: number]: IPoint[][] } = {
             { x: 0, y: 1 },
             { x: 0, y: 2 },
             { x: 1, y: 1 }
+        ],
+        [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 2, y: 0 },
+            { x: 1, y: 1 }
+        ],
+        [
+            { x: 0, y: 1 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 1, y: 2 }
+        ],
+        [
+            { x: 0, y: 1 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 2, y: 1 }
         ]
     ]
 };
@@ -162,6 +180,11 @@ function generateRandomBlock(): IPiece {
 }
 
 const useStyles = makeStyles((theme) => ({
+    body: {
+        margin: "auto",
+        width: "20%",
+        marginTop: "20px"
+    },
     square: {
         height: "20px",
         width: "20px",
@@ -170,6 +193,13 @@ const useStyles = makeStyles((theme) => ({
     },
     row: {
         display: "table"
+    },
+    text: {
+        margin: "auto",
+        width: "30%",
+        border: "3px solid black",
+        marginTop: "20px",
+        textAlign: "center"
     }
 }));
 
@@ -561,7 +591,7 @@ const Tetris = () => {
             setUseless((oldUseless) => {
                 return oldUseless + 1;
             })
-        }, 1000);
+        }, 2000);
     }
 
     useEffect(() => {
@@ -572,18 +602,27 @@ const Tetris = () => {
 
     return (
         <div>
-            <button onClick={() => { startGame(); inputRef.current.focus(); }}>Start</button>
-            <div onKeyDown={onKeyDown} ref={inputRef} tabIndex={0}>
-                {
-                    ROWS.map(i =>
-                        <div className={styles.row} key={i}>
-                            {COLS.map(j =>
-                                <div className={styles.square} key={j} style={game != null && game.board[i][j] in codeToColor ? { backgroundColor: codeToColor[game.board[i][j]] } : {}}>
-                                </div>
-                            )}
-                        </div>
-                    )
-                }
+            <div className={styles.text}>
+                    <p>
+                        This is a very lacking port of tetris that I built for fun.
+                        <br />
+                        It should have basic piece movement and functionality.
+                    </p>
+                </div>
+            <div className={styles.body}>
+                <button onClick={() => { startGame(); inputRef.current.focus(); }}>Start</button>
+                <div onKeyDown={onKeyDown} ref={inputRef} tabIndex={0}>
+                    {
+                        ROWS.map(i =>
+                            <div className={styles.row} key={i}>
+                                {COLS.map(j =>
+                                    <div className={styles.square} key={j} style={game != null && game.board[i][j] in codeToColor ? { backgroundColor: codeToColor[game.board[i][j]] } : {}}>
+                                    </div>
+                                )}
+                            </div>
+                        )
+                    }
+                </div>
             </div>
         </div>
     );

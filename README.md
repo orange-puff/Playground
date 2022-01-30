@@ -5,4 +5,4 @@ Projects
 2. tiktaktoe project - done
 3. typing project - done
 4. digit project - not started
-5. tetris: figure out t transofmration and center
+5. tetris - done

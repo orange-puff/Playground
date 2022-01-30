@@ -376,10 +376,6 @@ const moveMap: { [key in Move]: IPoint } = {
     [Move.space]: {x: 0, y: 0}
 };
 
-function handleUp() {
-
-}
-
 function rowCheck(board: number[][]) : boolean {
     let validRowCheck: boolean = false;
 
@@ -406,34 +402,21 @@ function rowCheck(board: number[][]) : boolean {
     }
 
     // anything above the deleted rows needs to be moved down
-    
+    for (let i = board.length - 1; i >= 0; i--) {
+        for (let j = 0; j < board[0].length; j++) {
+            if (board[i][j] === 0) {
+                continue;
+            }
+            let k: number = i;
+            while (k + 1 < board.length && board[k+1][j] === 0) {
+                board[k+1][j] = board[k][j];
+                board[k][j] = 0;
+                k += 1;
+            }
+        }
+    }
 
     return validRowCheck;
-}
-
-function handleSpace(game: IGameState): IGameState {
-    // delete piece
-    deletePiece(game.board, game.currPiece);
-
-    if (game.currPiece.position.x > 0) {
-        game.currPiece.position.x -= 1;
-    }
-
-    // find low points
-    const lowPoints = findLowPoints(game.board, game.currPiece);
-
-    // place piece at low points
-    lowPoints.forEach(point => game.board[point.x][point.y] = game.currPiece.code);
-
-    // trigger row check
-    rowCheck(game.board);
-
-    // game gets new piece
-    game.currPiece = generateRandomBlock();
-    if (!tryPlacePiece(game.board, game.currPiece)) {
-        return initGame();
-    }
-    return game;
 }
 
 function deletePiece(board: number[][], piece: IPiece) {
@@ -457,6 +440,34 @@ function deleteLowPoints(board: number[][], piece: IPiece) {
             board[point.x][point.y] = 0;
         }
     });
+}
+
+function handleUp(game: IGameState): IGameState {
+    
+}
+
+function handleSpace(game: IGameState): IGameState {
+    // delete piece
+    deletePiece(game.board, game.currPiece);
+
+    // move piece up, so it always can go down
+    game.currPiece.position.x -= 1;
+
+    // find low points
+    const lowPoints = findLowPoints(game.board, game.currPiece);
+
+    // place piece at low points
+    lowPoints.forEach(point => game.board[point.x][point.y] = game.currPiece.code);
+
+    // trigger row check
+    rowCheck(game.board);
+
+    // game gets new piece
+    game.currPiece = generateRandomBlock();
+    if (!tryPlacePiece(game.board, game.currPiece)) {
+        return initGame();
+    }
+    return game;
 }
 
 function handleDirectional(game: IGameState, move: Move): IGameState {

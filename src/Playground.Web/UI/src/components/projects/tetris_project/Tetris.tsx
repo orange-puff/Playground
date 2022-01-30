@@ -411,7 +411,7 @@ const moveMap: { [key in Move]: IPoint } = {
 
 function rowCheck(board: number[][]) : boolean {
     let validRowCheck: boolean = false;
-
+    let rowCheckStartIndex: number = 0;
     // clear all full rows
     for (let i = 0; i < board.length; i++) {
         let fullRow: boolean = true;
@@ -426,6 +426,7 @@ function rowCheck(board: number[][]) : boolean {
             for (let j = 0; j < board[0].length; j++) {
                 board[i][j] = 0;
             }
+            rowCheckStartIndex = Math.max(rowCheckStartIndex, i);
         }
         validRowCheck = validRowCheck || fullRow;
     }
@@ -435,13 +436,13 @@ function rowCheck(board: number[][]) : boolean {
     }
 
     // anything above the deleted rows needs to be moved down
-    for (let i = board.length - 1; i >= 0; i--) {
+    for (let i = rowCheckStartIndex; i >= 0; i--) {
         for (let j = 0; j < board[0].length; j++) {
             if (board[i][j] === 0) {
                 continue;
             }
             let k: number = i;
-            while (k + 1 < board.length && board[k+1][j] === 0) {
+            while (k + 1 <= rowCheckStartIndex && board[k+1][j] === 0) {
                 board[k+1][j] = board[k][j];
                 board[k][j] = 0;
                 k += 1;

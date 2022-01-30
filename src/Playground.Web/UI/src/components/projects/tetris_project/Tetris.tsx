@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 const ROWS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
@@ -119,6 +119,14 @@ const codeToSpace: { [key: number]: IPoint[][] } = {
             { x: 2, y: 0 },
             { x: 3, y: 0 }
         ]
+    ],
+    [T_BLOCK_CODE]: [
+        [
+            { x: 0, y: 0 },
+            { x: 0, y: 1 },
+            { x: 0, y: 2 },
+            { x: 1, y: 1 }
+        ]
     ]
 };
 
@@ -230,12 +238,7 @@ function constructTBlock(): IPiece {
         spaceInd: 0,
         color: codeToColor[T_BLOCK_CODE][0],
         position: { x: 0, y: 4 },
-        space: [
-            { x: 0, y: 0 },
-            { x: 0, y: 1 },
-            { x: 0, y: 2 },
-            { x: 1, y: 1 }
-        ],
+        space: codeToSpace[T_BLOCK_CODE][0],
         code: T_BLOCK_CODE
     }
 }
@@ -443,7 +446,25 @@ function deleteLowPoints(board: number[][], piece: IPiece) {
 }
 
 function handleUp(game: IGameState): IGameState {
-    
+    // delete piece
+    deletePiece(game.board, game.currPiece);
+
+    // adjust piece
+    const newPiece = clonePiece(game.currPiece);
+    const newSpaceInd: number = (newPiece.spaceInd + 1) % codeToSpace[newPiece.code].length;
+    newPiece.space = codeToSpace[newPiece.code][newSpaceInd];
+    newPiece.spaceInd = newSpaceInd;
+
+    // try to place adjusted piece
+    if (!tryPlacePiece(game.board, newPiece)) {
+        tryPlacePiece(game.board, game.currPiece);
+    }
+    else {
+        // if we cannot, reset the piece
+        game.currPiece = newPiece;
+    }
+
+    return game;
 }
 
 function handleSpace(game: IGameState): IGameState {
@@ -501,7 +522,7 @@ function handleDirectional(game: IGameState, move: Move): IGameState {
 function updateGame(game: IGameState, move: Move): IGameState {
     switch (move) {
         case Move.up:
-            break;
+            return handleUp(game);
         case Move.space:
             return handleSpace(game);
         default:
@@ -512,10 +533,11 @@ function updateGame(game: IGameState, move: Move): IGameState {
 const Tetris = () => {
     const styles = useStyles();
     const [game, setGame] = useState<IGameState>(null);
+    const [useless, setUseless] = useState<number>(0);
     const inputRef = useRef(null);
 
     function onKeyDown(event: any) {
-        const clonedGame = cloneGame(game);
+        const clonedGame: IGameState = cloneGame(game);
         if (event.key === "ArrowLeft") {
             setGame(updateGame(clonedGame, Move.left));
         }
@@ -533,9 +555,24 @@ const Tetris = () => {
         }
     }
 
+    function startGame() {
+        setGame(start());
+        setInterval(() => {
+            setUseless((oldUseless) => {
+                return oldUseless + 1;
+            })
+        }, 1000);
+    }
+
+    useEffect(() => {
+        if (game != null) {
+            setGame(updateGame(game, Move.down));
+        }
+    }, [useless]);
+
     return (
         <div>
-            <button onClick={() => { setGame(start()); inputRef.current.focus(); }}>Start</button>
+            <button onClick={() => { startGame(); inputRef.current.focus(); }}>Start</button>
             <div onKeyDown={onKeyDown} ref={inputRef} tabIndex={0}>
                 {
                     ROWS.map(i =>

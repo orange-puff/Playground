@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Playground.EF;
 using Playground.Web.Models.JsonProjectModels;
 using Playground.Utilities.TypingProject;
-using JsonProject;
 using System.Threading.Tasks;
 using Playground.Models;
 using Microsoft.EntityFrameworkCore;
@@ -31,20 +30,10 @@ namespace Playground.Web.Controllers
         public IActionResult JsonProject(JsonProjectModel json)
         {
             _logger.LogInformation($"Json helper: {json}");
-            if (JsonHelper.TryFormat(json.Json, out var result))
+            return Ok(new JsonProjectModel
             {
-                return Ok(new JsonProjectModel
-                {
-                    Json = result
-                });
-            }
-            else
-            {
-                return Ok(new JsonProjectErrorModel
-                {
-                    Error = result
-                });
-            }
+                Json = "good"
+            });
         }
 
         [HttpGet("[controller]/typing_project")]

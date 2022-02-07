@@ -47,6 +47,7 @@ const JsonProject = () => {
     const [error, setError] = useState<string>('');
 
     function validate() {
+        /*
         setError('');
         setOutput('');
         const body: IJsonProjectModel = { json: input };
@@ -59,6 +60,7 @@ const JsonProject = () => {
             .then(res => res.json())
             .then(data => 'error' in data ? setError(data.error) : setOutput(data.json))
             .catch(err => console.log(err));
+            */
     }
 
     return (

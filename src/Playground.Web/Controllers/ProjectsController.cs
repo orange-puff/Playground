@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Playground.EF;
-using Playground.Web.Models.JsonProjectModels;
 using Playground.Utilities.TypingProject;
 using System.Threading.Tasks;
 using Playground.Models;
@@ -24,16 +23,6 @@ namespace Playground.Web.Controllers
         {
             _logger = logger;
             _playgroundDbContext = playgroundDbContext;
-        }
-
-        [HttpPost("[controller]/json_project")]
-        public IActionResult JsonProject(JsonProjectModel json)
-        {
-            _logger.LogInformation($"Json helper: {json}");
-            return Ok(new JsonProjectModel
-            {
-                Json = "good"
-            });
         }
 
         [HttpGet("[controller]/typing_project")]

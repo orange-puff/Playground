@@ -18,10 +18,8 @@ const Projects = () => {
                 My Projects
             </p>
             <ul>
-                <li><Button to="/projects/json_project" component={Link} className={styles.project}>Json Project</Button></li>
                 <li><Button to="/projects/tiktaktoe_project" component={Link} className={styles.project}>TikTakToe Project</Button></li>
                 <li><Button to="/projects/typing_project" component={Link} className={styles.project}>Typing Project</Button></li>
-                <li><Button to="/projects/digit_project" component={Link} className={styles.project}>Digit Project</Button></li>
                 <li><Button to="/projects/tetris_project" component={Link} className={styles.project}>Tetris Project</Button></li>
             </ul>
         </div>

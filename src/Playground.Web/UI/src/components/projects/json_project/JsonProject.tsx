@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
-import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import ClearAllIcon from '@material-ui/icons/ClearAll';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -31,7 +30,7 @@ const ErrorBox = (props: React.PropsWithChildren<IErrorBoxProps>) => {
             <div className="errorColumn">
                 <Typography variant="h6">
                     Error:
-                    </Typography>
+                </Typography>
             </div>
             <div className="errorBody">
                 <pre>{error}</pre>
@@ -65,8 +64,8 @@ const JsonProject = () => {
 
     return (
         <div>
-            <Typography variant="h3" component="h3" gutterBottom className={styles.title}>
-                Json Formatter and Validator
+            <Typography variant="h6" component="h6" gutterBottom className={styles.title}>
+                I am not sure what to do with this yet, but I built a very basic editor with line numbering.
             </Typography>
             <div>
                 <Button
@@ -78,19 +77,9 @@ const JsonProject = () => {
                 >
                     Clear
                 </Button>
-                <Button
-                    variant="contained"
-                    color="default"
-                    className={styles.button}
-                    startIcon={<DoubleArrowIcon />}
-                    onClick={validate}
-                >
-                    Validate
-                </Button>
             </div>
             <div style={{ display: "flex", flexDirection: "row" }}>
                 <Editor value={input} setValue={setInput} placeHolder='input' readonly={false} />
-                <Editor value={output} setValue={setOutput} placeHolder='output' readonly={true} />
             </div>
             {error === '' ? <p></p> : <ErrorBox error={error} />}
         </div>

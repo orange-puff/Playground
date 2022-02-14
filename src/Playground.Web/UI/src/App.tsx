@@ -1,4 +1,3 @@
-import React from 'react'
 import {
     Switch,
     Route
@@ -18,7 +17,7 @@ function App() {
             <Switch>
                 <Route exact path="/" component={Home} />
                 <Route exact path="/projects" component={Projects} />
-                <Route exact path="/projects/json_project" component={JsonProject} />
+                <Route exact path="/projects/editor_project" component={JsonProject} />
                 <Route exact path="/projects/tiktaktoe_project" component={TikTakToeProject} />
                 <Route exact path="/projects/typing_project" component={TypingProject} />
                 <Route exact path="/projects/digit_project" component={DigitProject} />

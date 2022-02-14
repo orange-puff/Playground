@@ -339,16 +339,16 @@ function pointsContain(points: IPoint[], point: IPoint): boolean {
 
 function findLowPoints(board: number[][], piece: IPiece): IPoint[] {
     const low: IPiece = clonePiece(piece);
-    
+
     let lowPoints: IPoint[] = [];
     let downx: number = low.position.x;
     const piecePoints: IPoint[] = [];
-    piece.space.forEach(p => piecePoints.push({x: p.x + piece.position.x, y: p.y + piece.position.y}));
+    piece.space.forEach(p => piecePoints.push({ x: p.x + piece.position.x, y: p.y + piece.position.y }));
     while (true) {
         downx = downx + 1;
         const downPoints: IPoint[] = [];
         piece.space.forEach(offSet => {
-            downPoints.push({x: downx + offSet.x, y: piece.position.y + offSet.y});
+            downPoints.push({ x: downx + offSet.x, y: piece.position.y + offSet.y });
         });
 
         let canPlace = true;
@@ -405,11 +405,11 @@ const moveMap: { [key in Move]: IPoint } = {
     [Move.down]: { x: 1, y: 0 },
     [Move.left]: { x: 0, y: -1 },
     [Move.right]: { x: 0, y: 1 },
-    [Move.up]: {x: 0, y: 0},
-    [Move.space]: {x: 0, y: 0}
+    [Move.up]: { x: 0, y: 0 },
+    [Move.space]: { x: 0, y: 0 }
 };
 
-function rowCheck(board: number[][]) : boolean {
+function rowCheck(board: number[][]): boolean {
     let validRowCheck: boolean = false;
     let rowCheckStartIndex: number = 0;
     // clear all full rows
@@ -442,8 +442,8 @@ function rowCheck(board: number[][]) : boolean {
                 continue;
             }
             let k: number = i;
-            while (k + 1 <= rowCheckStartIndex && board[k+1][j] === 0) {
-                board[k+1][j] = board[k][j];
+            while (k + 1 <= rowCheckStartIndex && board[k + 1][j] === 0) {
+                board[k + 1][j] = board[k][j];
                 board[k][j] = 0;
                 k += 1;
             }
@@ -603,13 +603,6 @@ const Tetris = () => {
 
     return (
         <div>
-            <div className={styles.text}>
-                    <p>
-                        This is a very lacking port of tetris that I built for fun.
-                        <br />
-                        It should have basic piece movement and functionality.
-                    </p>
-                </div>
             <div className={styles.body}>
                 <button onClick={() => { startGame(); inputRef.current.focus(); }}>Start</button>
                 <div onKeyDown={onKeyDown} ref={inputRef} tabIndex={0}>

@@ -318,7 +318,7 @@ function tryPlacePiece(board: number[][], piece: IPiece): boolean {
     piece.space.forEach(offset => {
         let i = piece.position.x + offset.x;
         let j = piece.position.y + offset.y;
-        if (!indexGood(i, j) || (board[i][j] != 0 && board[i][j] != LOW_BLOCK_CODE)) {
+        if (!indexGood(i, j) || (board[i][j] !== 0 && board[i][j] !== LOW_BLOCK_CODE)) {
             canPlace = false;
         }
     });

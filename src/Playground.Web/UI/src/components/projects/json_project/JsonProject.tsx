@@ -15,10 +15,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-interface IJsonProjectModel {
-    json: string;
-}
-
 interface IErrorBoxProps {
     error: string;
 }
@@ -44,23 +40,6 @@ const JsonProject = () => {
     const [input, setInput] = useState<string>('');
     const [output, setOutput] = useState<string>('');
     const [error, setError] = useState<string>('');
-
-    function validate() {
-        /*
-        setError('');
-        setOutput('');
-        const body: IJsonProjectModel = { json: input };
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        };
-        fetch('/api/projects/json_project', requestOptions)
-            .then(res => res.json())
-            .then(data => 'error' in data ? setError(data.error) : setOutput(data.json))
-            .catch(err => console.log(err));
-            */
-    }
 
     return (
         <div>

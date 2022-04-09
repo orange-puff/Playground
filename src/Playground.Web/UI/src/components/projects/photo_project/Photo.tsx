@@ -2,14 +2,14 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     photo: {
-        width: 400,
+        width: 500,
         height: 400,
         overflow: "hidden",
         display: "inline",
-        borderRadius: 25,
+        borderRadius: 25
     },
     img: {
-        width: 400,
+        width: 500,
         height: 400,
         objectFit: "fill",
         borderRadius: 25

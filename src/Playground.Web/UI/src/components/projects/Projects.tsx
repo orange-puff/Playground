@@ -22,6 +22,7 @@ const Projects = () => {
                 <li><Button to="/projects/tiktaktoe_project" component={Link} className={styles.project}>TikTakToe Project</Button></li>
                 <li><Button to="/projects/editor_project" component={Link} className={styles.project}>Editor Project</Button></li>
                 <li><Button to="/projects/photo_project" component={Link} className={styles.project}>Photo Project</Button></li>
+                <li><Button to="/projects/snake_project" component={Link} className={styles.project}>Snake Project</Button></li>
             </ul>
         </div>
     );

@@ -84,28 +84,75 @@ function findIgnorePoints(board: number[][]): number[][] {
     return toRet;
 }
 
-function tick(board: number[][], dir: Direction): number[][] {
-    const newBoard: number[][] = [];
-    board.forEach(row => newBoard.push(Object.assign([], row)));
+function outOfBounds(i: number, j: number): boolean {
+    return i < 0 || i >= ROWS.length || j <= 0 || j >= COLS.length;
+}
 
-    let maxBody = 1;
+function getBody(board: number[][]): { [key: number]: number[] } {
     const body: { [key: number]: number[] } = {};
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board.length; j++) {
-            if (board[i][j] >= 1) {
-                maxBody = Math.max(maxBody, board[i][j]);
+            if (board[i][j] >= HEAD) {
                 body[board[i][j]] = [i, j];
             }
         }
     }
 
+    return body;
+}
+
+function tick(board: number[][], dir: Direction): number[][] {
+    const newBoard: number[][] = [];
+    board.forEach(row => newBoard.push(Object.assign([], row)));
+
+    let body: { [key: number]: number[] } = getBody(board);
+    const maxBody: number = Object.keys(body).length;
+
     const direction = DIRECTIONS[dir];
-    for (let i = 1; i <= maxBody; i++) {
+    let ateBug: boolean = false;
+    for (let i = HEAD; i <= maxBody; i++) {
         const currInd: number[] = body[i];
         const newInd: number[] = [currInd[0] + direction[0], currInd[1] + direction[1]];
-
+        // if we go out of bounds
+        if (outOfBounds(newInd[0], newInd[1])) {
+            return null;
+        }
+        // if we overlap, game over
+        if (newBoard[newInd[0]][newInd[1]] >= HEAD) {
+            return null;
+        }
+        // ate bug
+        if (i == HEAD && newBoard[newInd[0]][newInd[1]] === FOOD) {
+            ateBug = true;
+        }
         newBoard[newInd[0]][newInd[1]] = newBoard[currInd[0]][currInd[1]];
         newBoard[currInd[0]][currInd[1]] = EMPTY;
+    }
+
+    if (ateBug) {
+        const tailInd: number[] = [body[maxBody][0] + direction[0], body[maxBody][1] + direction[1]];
+        const row: number[] = [-1, 1, 0, 0];
+        const col: number[] = [0, 0, -1, 1];
+
+        let addedTail = false;
+        for (let i = 0; i < row.length; i++) {
+            const newInd: number[] = [tailInd[0] + row[i], tailInd[1] + col[i]];
+            if (outOfBounds(newInd[0], newInd[1])) {
+                continue;
+            }
+            if (newBoard[newInd[0]][newInd[1]] === EMPTY) {
+                addedTail = true;
+                newBoard[newInd[0]][newInd[1]] = maxBody + 1;
+                break;
+            }
+        }
+
+        if (!addedTail) {
+            return null;
+        }
+
+        const randInd: number[] = randomIndex(findIgnorePoints(newBoard));
+        newBoard[randInd[0]][randInd[1]] = FOOD;
     }
 
     return newBoard;
@@ -116,21 +163,34 @@ const Snake = () => {
     const [board, setBoard] = useState<number[][]>(null);
     const [dir, setDir] = useState<Direction>(Direction.right);
     const [useless, setUseless] = useState<number>(0);
+    const [gameOver, setGameOver] = useState<boolean>(false);
+    const [intervalId, setIntervalId] = useState<NodeJS.Timeout>(null);
     const inputRef = useRef(null);
 
     function startGame() {
+        if (intervalId !== null) {
+            clearInterval(intervalId);
+        }
         setBoard(initBoard());
         setDir(Direction.right);
-        setInterval(() => {
+        const intId = setInterval(() => {
             setUseless((oldUseless) => {
                 return oldUseless + 1;
             })
         }, 100);
+        setIntervalId(intId);
     }
 
     useEffect(() => {
         if (board != null) {
-            setBoard(tick(board, dir));
+            const newBoard: number[][] = tick(board, dir);
+            if (newBoard == null) {
+                setGameOver(true);
+                startGame();
+            }
+            else {
+                setBoard(tick(board, dir));
+            }
         }
     }, [useless]);
 

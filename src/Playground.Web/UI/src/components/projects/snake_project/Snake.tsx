@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 
 enum Direction {
     up,
@@ -27,6 +28,7 @@ const DIRECTIONS: { [key in Direction]: number[] } = {
     [Direction.right]: [0, 1],
     [Direction.down]: [1, 0],
 };
+const MAX_KEY: string = 'snake_max';
 
 const useStyles = makeStyles((theme) => ({
     body: {
@@ -40,21 +42,23 @@ const useStyles = makeStyles((theme) => ({
         height: "25px",
         width: "25px",
         border: "1px solid #999",
-        float: "left"
+        float: "left",
     },
+    info: {
+        float: "left",
+        marginLeft: "50px",
+
+    },
+    board: {
+        margin: "auto",
+        float: "left",
+    }
 }));
 
 function initBoard(): number[][] {
     const toRet: number[][] = [];
     ROWS.forEach(_ => toRet.push(new Array(COLS.length).fill(0)));
     toRet[Math.round(M / 2)][Math.round(N / 2)] = HEAD;
-    /*
-    toRet[M/2][N/2 - 1] = HEAD + 1;
-    toRet[M/2][N/2 - 2] = HEAD + 2;
-    toRet[M/2][N/2 - 3] = HEAD + 3;
-    toRet[M/2][N/2 - 4] = HEAD + 4;
-    toRet[M/2][N/2 - 5] = HEAD + 5;
-    */
     const ind: number[] = randomIndex(findIgnorePoints(toRet));
     toRet[ind[0]][ind[1]] = FOOD;
     return toRet;
@@ -123,7 +127,7 @@ function tick(board: number[][], dir: Direction): number[][] {
         const newInd: number[] =
             i === HEAD
                 ? [currInd[0] + direction[0], currInd[1] + direction[1]]
-                : body[i-1];
+                : body[i - 1];
 
         // if we go out of bounds
         if (outOfBounds(newInd[0], newInd[1])) {
@@ -168,12 +172,20 @@ const Snake = () => {
     const [useless, setUseless] = useState<number>(0);
     const [gameOver, setGameOver] = useState<boolean>(false);
     const [intervalId, setIntervalId] = useState<NodeJS.Timeout>(null);
+    const [current, setCurrent] = useState<number>(1);
+    const [max, setMax] = useState<number>(findMax());
     const inputRef = useRef(null);
+
+    function findMax(): number {
+        const max = localStorage.getItem('snake_max');
+        return max === null ? 1 : parseInt(max);
+    }
 
     function startGame() {
         if (intervalId !== null) {
             clearInterval(intervalId);
         }
+        setGameOver(false);
         setBoard(initBoard());
         setDir(Direction.right);
         const intId = setInterval(() => {
@@ -188,14 +200,19 @@ const Snake = () => {
         if (board != null) {
             const newBoard: number[][] = tick(board, dir);
             if (newBoard == null) {
+                setMax(Math.max(max, current));
+                localStorage.setItem(MAX_KEY, String(max));
                 setGameOver(true);
-                startGame();
             }
             else {
-                setBoard(tick(board, dir));
+                setCurrent(Object.keys(getBody(newBoard)).length);
+                setBoard(newBoard);
             }
         }
-    }, [useless]);
+        if (gameOver) {
+            clearInterval(intervalId);
+        }
+    }, [useless, gameOver]);
 
     function onKeyDown(event: any) {
         if (event.key === "ArrowLeft") {
@@ -218,22 +235,48 @@ const Snake = () => {
                 setDir(Direction.down);
             }
         }
+        else if (event.key === " ") {
+            startGame();
+        }
     }
 
     return (
         <div className={styles.body}>
+            <Typography component="p" gutterBottom>
+                Click Start to play Snake. You can press the spacebar to restart if you lose.
+            </Typography>
             <button onClick={() => { startGame(); inputRef.current.focus(); }}>Start</button>
-            <div onKeyDown={onKeyDown} ref={inputRef} tabIndex={0}>
-                {
-                    ROWS.map(i =>
-                        <div className={styles.row} key={i}>
-                            {COLS.map(j =>
-                                <div className={styles.square} key={j} style={board != null ? board[i][j] >= BODY ? { backgroundColor: "#1facd7" } : { backgroundColor: COLORS[board[i][j]] } : {}}>
+            <div>
+                <div className={styles.board}>
+                    <div onKeyDown={onKeyDown} ref={inputRef} tabIndex={0}>
+                        {
+                            ROWS.map(i =>
+                                <div className={styles.row} key={i}>
+                                    {COLS.map(j =>
+                                        <div className={styles.square} key={j} style={board != null ? board[i][j] >= BODY ? { backgroundColor: "#1facd7" } : { backgroundColor: COLORS[board[i][j]] } : {}}>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                    )
-                }
+                            )
+                        }
+                    </div>
+                </div>
+                <div className={styles.info}>
+                    {
+                        gameOver
+                            ?
+                            <Typography component="p" gutterBottom>
+                                You lost! Press spacebar to play again
+                            </Typography>
+                            :
+                            <Typography component="p" gutterBottom>
+                                Goodluck!
+                            </Typography>
+                    }
+                    <Typography component="p" gutterBottom>
+                        Curent: {current} | Max: {max}
+                    </Typography>
+                </div>
             </div>
         </div>
     );

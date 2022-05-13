@@ -8,8 +8,8 @@ enum Direction {
     right
 }
 
-const ROWS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-const COLS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+const ROWS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+const COLS: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
 const M: number = ROWS.length;
 const N: number = COLS.length;
 const HEAD: number = 1;
@@ -30,7 +30,7 @@ const DIRECTIONS: { [key in Direction]: number[] } = {
 
 const useStyles = makeStyles((theme) => ({
     body: {
-        marginTop: "50px",
+        marginTop: "10px",
         marginLeft: "200px"
     },
     row: {
@@ -47,7 +47,14 @@ const useStyles = makeStyles((theme) => ({
 function initBoard(): number[][] {
     const toRet: number[][] = [];
     ROWS.forEach(_ => toRet.push(new Array(COLS.length).fill(0)));
-    toRet[M / 2][N / 2] = HEAD;
+    toRet[Math.round(M / 2)][Math.round(N / 2)] = HEAD;
+    /*
+    toRet[M/2][N/2 - 1] = HEAD + 1;
+    toRet[M/2][N/2 - 2] = HEAD + 2;
+    toRet[M/2][N/2 - 3] = HEAD + 3;
+    toRet[M/2][N/2 - 4] = HEAD + 4;
+    toRet[M/2][N/2 - 5] = HEAD + 5;
+    */
     const ind: number[] = randomIndex(findIgnorePoints(toRet));
     toRet[ind[0]][ind[1]] = FOOD;
     return toRet;
@@ -85,7 +92,7 @@ function findIgnorePoints(board: number[][]): number[][] {
 }
 
 function outOfBounds(i: number, j: number): boolean {
-    return i < 0 || i >= ROWS.length || j <= 0 || j >= COLS.length;
+    return i < 0 || i >= ROWS.length || j < 0 || j >= COLS.length;
 }
 
 function getBody(board: number[][]): { [key: number]: number[] } {
@@ -112,7 +119,12 @@ function tick(board: number[][], dir: Direction): number[][] {
     let ateBug: boolean = false;
     for (let i = HEAD; i <= maxBody; i++) {
         const currInd: number[] = body[i];
-        const newInd: number[] = [currInd[0] + direction[0], currInd[1] + direction[1]];
+        // the new index should be the current index offset by the directional for the head, else the square of the body part infront of it
+        const newInd: number[] =
+            i === HEAD
+                ? [currInd[0] + direction[0], currInd[1] + direction[1]]
+                : body[i-1];
+
         // if we go out of bounds
         if (outOfBounds(newInd[0], newInd[1])) {
             return null;
@@ -122,7 +134,7 @@ function tick(board: number[][], dir: Direction): number[][] {
             return null;
         }
         // ate bug
-        if (i == HEAD && newBoard[newInd[0]][newInd[1]] === FOOD) {
+        if (i === HEAD && newBoard[newInd[0]][newInd[1]] === FOOD) {
             ateBug = true;
         }
         newBoard[newInd[0]][newInd[1]] = newBoard[currInd[0]][currInd[1]];
@@ -131,25 +143,16 @@ function tick(board: number[][], dir: Direction): number[][] {
 
     if (ateBug) {
         const tailInd: number[] = [body[maxBody][0] + direction[0], body[maxBody][1] + direction[1]];
-        const row: number[] = [-1, 1, 0, 0];
-        const col: number[] = [0, 0, -1, 1];
-
-        let addedTail = false;
-        for (let i = 0; i < row.length; i++) {
-            const newInd: number[] = [tailInd[0] + row[i], tailInd[1] + col[i]];
-            if (outOfBounds(newInd[0], newInd[1])) {
-                continue;
-            }
-            if (newBoard[newInd[0]][newInd[1]] === EMPTY) {
-                addedTail = true;
-                newBoard[newInd[0]][newInd[1]] = maxBody + 1;
-                break;
-            }
-        }
-
-        if (!addedTail) {
+        const newInd: number[] = [tailInd[0] + (-1 * direction[0]), tailInd[1] + (-1 * direction[1])];
+        // if the new index is out of bounds
+        if (outOfBounds(newInd[0], newInd[1])) {
             return null;
         }
+        // if the new index is not an EMPTY square
+        if (newBoard[newInd[0]][newInd[1]] !== EMPTY) {
+            return null;
+        }
+        newBoard[newInd[0]][newInd[1]] = maxBody + 1;
 
         const randInd: number[] = randomIndex(findIgnorePoints(newBoard));
         newBoard[randInd[0]][randInd[1]] = FOOD;
@@ -196,16 +199,24 @@ const Snake = () => {
 
     function onKeyDown(event: any) {
         if (event.key === "ArrowLeft") {
-            setDir(Direction.left);
+            if (dir !== Direction.right) {
+                setDir(Direction.left);
+            }
         }
         else if (event.key === "ArrowRight") {
-            setDir(Direction.right);
+            if (dir !== Direction.left) {
+                setDir(Direction.right);
+            }
         }
         else if (event.key === "ArrowUp") {
-            setDir(Direction.up);
+            if (dir !== Direction.down) {
+                setDir(Direction.up);
+            }
         }
         else if (event.key === "ArrowDown") {
-            setDir(Direction.down);
+            if (dir !== Direction.up) {
+                setDir(Direction.down);
+            }
         }
     }
 

@@ -47,7 +47,13 @@ const useStyles = makeStyles((theme) => ({
     info: {
         float: "left",
         marginLeft: "50px",
-
+        border: "2px solid grey"
+    },
+    infoText: {
+        marginLeft: "5px",
+        marginRight: "5px",
+        marginBottom: "5px",
+        marginTop: "5px"
     },
     board: {
         margin: "auto",
@@ -265,15 +271,15 @@ const Snake = () => {
                     {
                         gameOver
                             ?
-                            <Typography component="p" gutterBottom>
+                            <Typography className={styles.infoText} component="p" gutterBottom>
                                 You lost! Press spacebar to play again
                             </Typography>
                             :
-                            <Typography component="p" gutterBottom>
+                            <Typography className={styles.infoText} component="p" gutterBottom>
                                 Goodluck!
                             </Typography>
                     }
-                    <Typography component="p" gutterBottom>
+                    <Typography className={styles.infoText} component="p" gutterBottom>
                         Curent: {current} | Max: {max}
                     </Typography>
                 </div>

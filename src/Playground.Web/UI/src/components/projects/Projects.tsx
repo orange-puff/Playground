@@ -23,6 +23,7 @@ const Projects = () => {
                 <li><Button to="/projects/editor_project" component={Link} className={styles.project}>Editor Project</Button></li>
                 <li><Button to="/projects/photo_project" component={Link} className={styles.project}>Photo Project</Button></li>
                 <li><Button to="/projects/snake_project" component={Link} className={styles.project}>Snake Project</Button></li>
+                <li><Button to="/projects/game_of_life_project" component={Link} className={styles.project}>Game of Life Project</Button></li>
             </ul>
         </div>
     );

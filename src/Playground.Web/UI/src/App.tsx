@@ -12,6 +12,7 @@ import DigitProject from './components/projects/digit_project/DigitProject';
 import TetrisProject from './components/projects/tetris_project/TetrisProject';
 import PhotoGallery from './components/projects/photo_project/PhotoGallery';
 import Snake from './components/projects/snake_project/Snake';
+import GameOfLife from './components/projects/game_of_life_project/GameOfLife';
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
                 <Route exact path="/projects/tetris_project" component={TetrisProject} />
                 <Route exact path="/projects/photo_project" component={PhotoGallery} />
                 <Route exact path="/projects/snake_project" component={Snake} />
+                <Route exact path="/projects/game_of_life_project" component={GameOfLife} />
             </Switch>
         </Layout>
     );

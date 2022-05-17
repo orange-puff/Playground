@@ -29,6 +29,7 @@ const DIRECTIONS: { [key in Direction]: number[] } = {
     [Direction.down]: [1, 0],
 };
 const MAX_KEY: string = 'snake_max';
+const TICK_TIME: number = 100;
 
 const useStyles = makeStyles((theme) => ({
     body: {
@@ -170,11 +171,12 @@ function tick(board: number[][], dir: Direction): number[][] {
 
     return newBoard;
 }
+let dir: Direction = Direction.right;
+let nextDir: Direction = Direction.right;
 
 const Snake = () => {
     const styles = useStyles();
     const [board, setBoard] = useState<number[][]>(null);
-    const [dir, setDir] = useState<Direction>(Direction.right);
     const [useless, setUseless] = useState<number>(0);
     const [gameOver, setGameOver] = useState<boolean>(false);
     const [intervalId, setIntervalId] = useState<NodeJS.Timeout>(null);
@@ -193,17 +195,23 @@ const Snake = () => {
         }
         setGameOver(false);
         setBoard(initBoard());
-        setDir(Direction.right);
         const intId = setInterval(() => {
             setUseless((oldUseless) => {
                 return oldUseless + 1;
             })
-        }, 100);
+        }, TICK_TIME);
         setIntervalId(intId);
     }
 
     useEffect(() => {
         if (board != null) {
+            if (
+                (dir === Direction.right && nextDir !== Direction.left) ||
+                (dir === Direction.left && nextDir !== Direction.right) ||
+                (dir === Direction.up && nextDir !== Direction.down) ||
+                (dir === Direction.down && nextDir !== Direction.up)) {
+                dir = nextDir;
+            }
             const newBoard: number[][] = tick(board, dir);
             if (newBoard == null) {
                 setMax(Math.max(max, current));
@@ -222,26 +230,18 @@ const Snake = () => {
 
     function onKeyDown(event: any) {
         if (event.key === "ArrowLeft") {
-            if (dir !== Direction.right) {
-                setDir(Direction.left);
-            }
+            nextDir = Direction.left;
         }
         else if (event.key === "ArrowRight") {
-            if (dir !== Direction.left) {
-                setDir(Direction.right);
-            }
+            nextDir = Direction.right;
         }
         else if (event.key === "ArrowUp") {
-            if (dir !== Direction.down) {
-                setDir(Direction.up);
-            }
+            nextDir = Direction.up;
         }
         else if (event.key === "ArrowDown") {
-            if (dir !== Direction.up) {
-                setDir(Direction.down);
-            }
+            nextDir = Direction.down;
         }
-        else if (event.key === " ") {
+        else if (gameOver && event.key === " ") {
             startGame();
         }
     }

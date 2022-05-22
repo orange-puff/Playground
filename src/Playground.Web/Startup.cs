@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Playground.EF;
+using Playground.Web.Hubs;
 
 namespace Playground.Web
 {
@@ -29,6 +30,8 @@ namespace Playground.Web
             {
                 option.UseMySQL(connectionString, builder => builder.MigrationsAssembly("Playground"));
             });
+
+            services.AddSignalR();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -64,6 +67,7 @@ namespace Playground.Web
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
+                endpoints.MapHub<ConnectFourHub>("/hubs/game");
             });
 
             app.UseSpa(spa =>

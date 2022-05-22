@@ -6,6 +6,9 @@ const ConnectFourStartInput = (props: any) => {
 
     const onSubmit = (e: any) => {
         e.preventDefault();
+        if (props.gameStarted) {
+            return;
+        }
 
         const isUserProvided = user && user !== '';
         const isGameCodeProvided = gameCode && gameCode !== '';

@@ -6,12 +6,34 @@ using Playground.Web.Hubs.Clients;
 using Playground.Web.Models.ConnectFour;
 
 using Microsoft.AspNetCore.SignalR;
+using System.Collections.Concurrent;
 
 namespace Playground.Web.Hubs
 {
     public class ConnectFourHub : Hub<IConnectFourClient>
     {
-        private static readonly Dictionary<string, List<UserConnection>> _games = new Dictionary<string, List<UserConnection>>();
+        private static readonly ConcurrentDictionary<string, List<UserConnection>> _games = new ConcurrentDictionary<string, List<UserConnection>>();
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            var connectionId = Context.ConnectionId;
+
+            var gameCode = string.Empty;
+            foreach (var game in _games)
+            {
+                if (game.Value.Any(userConn => userConn.ConnectionId == connectionId))
+                {
+                    gameCode = game.Key;
+                }
+            }
+
+            if (gameCode != string.Empty)
+            {
+                _games.Remove(gameCode, out var users);
+            }
+
+            return base.OnDisconnectedAsync(exception);
+        }
 
         public async Task StartGame(StartGameRequest startGameRequest)
         {
